@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>勤怠アプリ 申請承認画面</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./assets/css/reset.css" />
+    <link rel="stylesheet" href="./assets/css/request-detail.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div class="page-logo">
+        <img src="./assets/img/logo.svg" alt="ロゴ COACHTECH" />
+      </div>
+      <div class="page-logo"></div>
+      <nav class="page-menu">
+        <ul>
+          <li><a href="">勤怠</a></li>
+          <li><a href="">勤怠一覧</a></li>
+          <li><a href="">申請</a></li>
+          <li><a href="">ログアウト</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="contents">
+      <section class="contents__lists-area">
+        <div class="attendance-title">勤怠詳細</div>
+        <div class="attendance-list">
+          <div class="name-section">
+            <div class="section__index">名前</div>
+            <div class="name-section__content">TESTMAN</div>
+          </div>
+          <div class="date-section">
+            <div class="section__index">日付</div>
+            <div class="date-section__year">2023年</div>
+            <div class="date-section__space">&nbsp;</div>
+            <div class="date-section__month">6月1日</div>
+          </div>
+          <div class="att-section">
+            <div class="section__index">出勤・退勤</div>
+            <div class="att-section__clockin">
+              <input
+                type="text"
+                class="clock-section"
+                name="attendance-clockin"
+                id="attendance-clockin"
+                value="09:00"
+                readonly
+                form="detail-form"
+              />
+            </div>
+            <div class="att-section__space"><span>～</span></div>
+            <div class="att-section__clockout">
+              <input
+                type="text"
+                class="clock-section"
+                name="attendance-clockout"
+                id="attendance-clockout"
+                value="18:00"
+                readonly
+                form="detail-form"
+              />
+            </div>
+          </div>
+
+          <div class="rest-section">
+            <div class="section__index">休憩</div>
+            <div class="rest-section__clockin">
+              <input
+                type="text"
+                class="clock-section"
+                name="rest-clockin"
+                id="rest-clockin"
+                value="09:00"
+                readonly
+                form="detail-form"
+              />
+            </div>
+            <div class="rest-section__space"><span>～</span></div>
+            <div class="rest-section__clockout">
+              <input
+                type="text"
+                class="clock-section"
+                name="rest-clockout"
+                id="rest-clockout"
+                value="18:00"
+                readonly
+                form="detail-form"
+              />
+            </div>
+          </div>
+          <div class="discript-section">
+            <div class="section__index">備考</div>
+            <div class="discript-section__content">
+              <textarea
+                name="discript"
+                id="discript"
+                readonly
+                form="detail-form"
+              >
+遅延のため</textarea
+              >
+            </div>
+          </div>
+        </div>
+        <form action="" class="detail-form" id="detail-form">
+          <button type="submit" class="form-btn">承認</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
