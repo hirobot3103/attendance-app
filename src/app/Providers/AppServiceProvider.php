@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Laravel\Dusk\DuskServiceProvider;
+// use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Fortify\Contracts\VerifyEmailViewResponse;
 use App\Http\Responses\CustomVerifyEmailViewResponse;
 
