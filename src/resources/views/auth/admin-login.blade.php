@@ -32,6 +32,11 @@
             @endif
             <p class="iteme-name-title">パスワード</p>
             <input type="password" class="item-prace" name="password" />
+            @if ($errors->has('email'))
+              @foreach($errors->get('password') as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
           </section>
           <button class="item-post-btn" type="submit">ログインする</button>
         </form>
