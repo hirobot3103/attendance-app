@@ -10,6 +10,12 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Admin;
+use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+
 // // Fortifyでカスタムフォームリクエストを使うために必要
 use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 use App\Http\Requests\LoginRequest;
@@ -30,6 +36,15 @@ class FortifyServiceProvider extends ServiceProvider
             RegisteredUserController::class,
             RegisterController::class,
         );
+
+        $this->app->singleton(VerifyEmailResponseContract::class, function () {
+            return new class implements VerifyEmailResponseContract {
+                public function toResponse($request)
+                {
+                    return redirect('/attendance'); // 認証後のリダイレクト先
+                }
+            };
+        });
     }
 
     /**
@@ -38,6 +53,33 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::createUsersUsing(CreateNewUser::class);
+
+        Fortify::loginView(function (Request $request) {
+            return $request->is('admin/*') ? view('auth.admin-login') : view('auth.login');
+        });
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            if ($request->is('admin/*')) {
+                $admin = Admin::where('email', $credentials['email'])->first();
+                if ($admin && Hash::check($credentials['password'], $admin->password)) {
+                    Auth::guard('admin')->login($admin);
+                    return $admin;
+                }
+            } else {
+                $user = User::where('email', $credentials['email'])->first();
+                if ($user && Hash::check($credentials['password'], $user->password)) {
+                    Auth::guard('web')->login($user);
+                    return $user;
+                }
+            }
+
+            return null;
+        });
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
@@ -55,6 +97,12 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::loginView(function () {
             return view('auth.login');
+        });
+
+        RateLimiter::for('login', function (Request $request) {
+            $email = (string) $request->email;
+
+            return Limit::perMinute(10)->by($email . $request->ip());
         });
 
         $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
