@@ -15,10 +15,13 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Admin;
 use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\AdminLoginRequest;
 
 // // Fortifyでカスタムフォームリクエストを使うために必要
-use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
-use App\Http\Requests\LoginRequest;
+// use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
+
+use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Auth\RegisterController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
@@ -59,10 +62,22 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::authenticateUsing(function (Request $request) {
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
+
+            $input = [
+                'email' => $request['email'],
+                'password' => $request['password'],
+            ];
+
+            if ($request->is('admin/*')) {
+                $RequestInstance = new AdminLoginRequest();
+            } else {
+                $RequestInstance = new LoginRequest();
+            }
+            $credentials = Validator::make(
+                $input,
+                $RequestInstance->rules(),
+                $RequestInstance->messages(),
+            )->validate();
 
             if ($request->is('admin/*')) {
                 $admin = Admin::where('email', $credentials['email'])->first();
@@ -105,6 +120,6 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by($email . $request->ip());
         });
 
-        $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
+        // $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
     }
 }
