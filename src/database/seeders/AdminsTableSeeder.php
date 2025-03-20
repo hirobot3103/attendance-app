@@ -17,7 +17,7 @@ class AdminsTableSeeder extends Seeder
             [
                 'name'              => '手島 香',
                 'email'             => 'administrator@attendance.com',
-                'password'          => Hash::make('admin'),
+                'password'          => Hash::make('adminadmin'),
                 'email_verified_at' => '2025-02-12 06:38:18',
             ],
         ];
