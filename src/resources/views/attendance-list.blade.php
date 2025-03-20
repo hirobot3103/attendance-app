@@ -1,59 +1,61 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>勤怠アプリ 勤怠一覧画面</title>
+@extends('layouts.app')
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-      rel="stylesheet"
-    />
+@section('subtitle','勤怠一覧画面')
 
-    <link rel="stylesheet" href="./assets/css/reset.css" />
-    <link rel="stylesheet" href="./assets/css/attendance-admin-list.css" />
-  </head>
-  <body>
+@section('css')
+    <link rel="stylesheet" href="{{ asset('assets/css/attendance-list.css') }}" />
+@endsection
+
+@section('header-contents')  
     <header class="page-header">
       <div class="page-logo">
-        <img src="./assets/img/logo.svg" alt="ロゴ COACHTECH" />
+        <img src="{{ asset('assets/img/logo.svg') }}" alt="ロゴ COACHTECH" />
       </div>
       <div class="page-logo"></div>
       <nav class="page-menu">
         <ul>
-          <li><a href="">勤怠一覧</a></li>
-          <li><a href="">スタッフ一覧</a></li>
-          <li><a href="">申請一覧</a></li>
-          <li><a href="">ログアウト</a></li>
+          <li><a href="/attendance">勤怠</a></li>
+          <li><a href="/attendance/list/">勤怠一覧</a></li>
+          <li><a href="">申請</a></li>
+          @if (Auth::guard('web')->check())
+          <li>
+            <form action="{{ route('logout') }}" method="post">
+                @csrf
+                <button type="submit" class="page-menu-btn">ログアウト</button>
+            </form>
+          </li>
+        @else
+          <li><a href="{{ route('login') }}">ログイン</a></li>
+        @endif
         </ul>
       </nav>
     </header>
+@endsection
 
+@section('main-contents')
     <main class="contents">
       <section class="contents__lists-area">
-        <div class="attendance-title">XXXX年XX月XX日の勤怠</div>
+        <div class="attendance-title">勤怠一覧</div>
         <form class="attendance-month">
           <button class="attendance-month__prev" name="month_prev">
-            <span>&larr;</span>前日
+            <span>&larr;</span>前月
           </button>
           <label for="month__current" class="attendance-month__label">
             <input
-              type="date"
+              type="month"
               class="attendance-month__current"
               name="month__current"
               id="month__current"
             />
           </label>
           <button class="attendance-month__next" name="month_next">
-            翌日<span>&rarr;</span>
+            翌月<span>&rarr;</span>
           </button>
         </form>
         <table class="attendance-list">
           <thead>
             <tr>
-              <th>名前</th>
+              <th>日付</th>
               <th>出勤</th>
               <th>退勤</th>
               <th>休憩</th>
@@ -63,7 +65,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>testman</td>
+              <td>06/01(木)</td>
               <td>09:00</td>
               <td>18:00</td>
               <td>1:00</td>
@@ -71,7 +73,7 @@
               <td class="attendance-list__detail"><a href="">詳細</a></td>
             </tr>
             <tr>
-              <td>testman2</td>
+              <td>06/01(木)</td>
               <td>09:00</td>
               <td>18:00</td>
               <td>1:00</td>
@@ -79,7 +81,7 @@
               <td class="attendance-list__detail"><a href="">詳細</a></td>
             </tr>
             <tr>
-              <td>testman3</td>
+              <td>06/01(木)</td>
               <td>09:00</td>
               <td>18:00</td>
               <td>1:00</td>
@@ -87,7 +89,7 @@
               <td class="attendance-list__detail"><a href="">詳細</a></td>
             </tr>
             <tr>
-              <td>testman4</td>
+              <td>06/01(木)</td>
               <td>09:00</td>
               <td>18:00</td>
               <td>1:00</td>
@@ -95,7 +97,7 @@
               <td class="attendance-list__detail"><a href="">詳細</a></td>
             </tr>
             <tr>
-              <td>testman5</td>
+              <td>06/01(木)</td>
               <td>09:00</td>
               <td>18:00</td>
               <td>1:00</td>
@@ -103,7 +105,31 @@
               <td class="attendance-list__detail"><a href="">詳細</a></td>
             </tr>
             <tr>
-              <td>testman6</td>
+              <td>06/01(木)</td>
+              <td>09:00</td>
+              <td>18:00</td>
+              <td>1:00</td>
+              <td>8:00</td>
+              <td class="attendance-list__detail"><a href="">詳細</a></td>
+            </tr>
+            <tr>
+              <td>06/01(木)</td>
+              <td>09:00</td>
+              <td>18:00</td>
+              <td>1:00</td>
+              <td>8:00</td>
+              <td class="attendance-list__detail"><a href="">詳細</a></td>
+            </tr>
+            <tr>
+              <td>06/01(木)</td>
+              <td>09:00</td>
+              <td>18:00</td>
+              <td>1:00</td>
+              <td>8:00</td>
+              <td class="attendance-list__detail"><a href="">詳細</a></td>
+            </tr>
+            <tr>
+              <td>06/01(木)</td>
               <td>09:00</td>
               <td>18:00</td>
               <td>1:00</td>
@@ -112,10 +138,6 @@
             </tr>
           </tbody>
         </table>
-        <form action="" class="csv-form">
-          <button type="submit" class="form-btn">CSV出力</button>
-        </form>
       </section>
     </main>
-  </body>
-</html>
+@endsection
