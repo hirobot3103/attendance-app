@@ -1,6 +1,7 @@
 <?php
 
 use Laravel\Fortify\Features;
+use Illuminate\Support\Facades\Auth;
 
 return [
 
@@ -73,7 +74,16 @@ return [
     |
     */
 
-    'home' => '/',
+    'home' => function () {
+
+        if (Auth::guard('admin')->check()) {
+            return route('admin.dashboard');
+        }
+
+        if (Auth::guard('web')->check()) {
+            return route('user.dashboard');
+        }
+    },
 
     /*
     |--------------------------------------------------------------------------
