@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\AttendanceController;
 
 // 一般ユーザーのログイン
 Route::get('/login', function () {
@@ -25,9 +26,8 @@ Route::middleware(['auth:web'])->group(function () {
     // メール認証済みが必須のルート
     Route::middleware('verified')->group(function () {
 
-        Route::get('/attendance', function () {
-            return view('top');
-        })->name('user.dashboard');
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('user.dashboard');
+        Route::post('/attendance', [AttendanceController::class, 'action'])->name('user.actions');
 
         Route::get('/attendance/list', function () {
             return view('attendance-list');
