@@ -10,11 +10,8 @@ class AttendancesTableSeeder extends Seeder
 {
     public function run(): void
     {
-        // user5人分の勤怠データの土台を作成
+        // user5人分の勤怠データを作成
         $this->makeAttendanceBaseDate(5);
-
-        // 申請済み、申請中のデータを作成
-
     }
 
     function makeAttendanceBaseDate(int $maxId)
@@ -38,6 +35,7 @@ class AttendancesTableSeeder extends Seeder
         $twoMonthAgoEndOfMonth = $twoMonthAgoDate->daysInMonth;
 
         $params = [];
+        $stats = [2, 2, 2, 2, 12, 2, 2, 12, 2, 2, 2, 2, 2, 13, 2, 2, 2, 2, 12, 12, 2];
 
         // 各月 土日を除く1日～月末日までId毎に作成
         for ($nowId = 1; $nowId <= $maxId; $nowId++) {
@@ -49,6 +47,8 @@ class AttendancesTableSeeder extends Seeder
                 $paramDay = new Carbon($strDate);
                 $starttime = $strDate . ' ' . '8:00:00';
                 $endtime   = $strDate . ' ' . '17:00:00';
+                $randId = rand(0, count($stats) - 1);
+                $datastatus = $stats[$randId];
 
                 // 土日でなければデータを作成
                 if (($paramDay->isSaturday() == false) and ($paramDay->isSunday() == false)) {
@@ -57,7 +57,7 @@ class AttendancesTableSeeder extends Seeder
                         'user_id'   => $nowId,
                         'clock_in'  => $starttime,
                         'clock_out' => $endtime,
-                        'status'    => 3,
+                        'status'    => $datastatus,
                     ];
                 }
             }
@@ -72,6 +72,8 @@ class AttendancesTableSeeder extends Seeder
                 $paramDay = new Carbon($strDate);
                 $starttime = $strDate . ' ' . '8:00:00';
                 $endtime   = $strDate . ' ' . '17:00:00';
+                $randId = rand(0, count($stats) - 1);
+                $datastatus = $stats[$randId];
 
                 // 土日でなければデータを作成
                 if (($paramDay->isSaturday() == false) and ($paramDay->isSunday() == false)) {
@@ -80,7 +82,7 @@ class AttendancesTableSeeder extends Seeder
                         'user_id'   => $nowId,
                         'clock_in'  => $starttime,
                         'clock_out' => $endtime,
-                        'status'    => 3,
+                        'status'    => $datastatus,
                     ];
                 }
             }
@@ -95,6 +97,8 @@ class AttendancesTableSeeder extends Seeder
                 $paramDay = new Carbon($strDate);
                 $starttime = $strDate . ' ' . '8:00:00';
                 $endtime   = $strDate . ' ' . '17:00:00';
+                $randId = rand(0, count($stats) - 1);
+                $datastatus = $stats[$randId];
 
                 // 土日でなければデータを作成
                 if (($paramDay->isSaturday() == false) and ($paramDay->isSunday() == false)) {
@@ -103,11 +107,10 @@ class AttendancesTableSeeder extends Seeder
                         'user_id'   => $nowId,
                         'clock_in'  => $starttime,
                         'clock_out' => $endtime,
-                        'status'    => 3,
+                        'status'    => $datastatus,
                     ];
                 }
             }
-            // DBへ登録
             DB::table('attendances')->insert($params);
         }
     }
