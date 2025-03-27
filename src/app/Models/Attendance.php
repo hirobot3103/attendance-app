@@ -14,5 +14,11 @@ class Attendance extends Model
         'clock_in',
         'clock_out',
         'status',
+        'discript',
     ];
+
+    public function rests()
+    {
+        return $this->hasMany('App\Models\Rest');
+    }
 }
