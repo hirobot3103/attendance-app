@@ -9,14 +9,14 @@
 @section('header-contents')
   <header class="page-header">
     <div class="page-logo">
-      <img src="./assets/img/logo.svg" alt="ロゴ COACHTECH" />
+      <img src="{{ asset('assets/img/logo.svg') }}" alt="ロゴ COACHTECH" />
     </div>
     <div class="page-logo"></div>
     <nav class="page-menu">
       <ul>
-        <li><a href="/attendance">勤怠</a></li>
-        <li><a href="/attendance/list">勤怠一覧</a></li>
-        <li><a href="/">申請</a></li>
+        <li><a href="{{ route('user.dashboard') }}">勤怠</a></li>
+        <li><a href="{{ route('user.attendant-list') }}">勤怠一覧</a></li>
+        <li><a href="{{ route('user.attendant-req') }}">申請</a></li>
         @if (Auth::guard('web')->check())
           <li>
             <form action="{{ route('logout') }}" method="post">
@@ -80,7 +80,7 @@
       <div class="attendance-status">{{ $attendanceStatus }}</div>
       <div class="attendance-date" id="attendance-date">2023年6月1日(木)</div>
       <div class="attendance-time" id="attendance-time">08:00</div>
-      <form action="/attendance" class="attendance-btn__area" method="POST">
+      <form action="{{ route('user.actions') }}" class="attendance-btn__area" method="POST">
         @csrf
         @if ($currentStatus == 0)
           <button type="submit" class="attendance-btn" name="clock_in">出&nbsp;勤</button>

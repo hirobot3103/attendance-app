@@ -28,7 +28,6 @@ class AttendanceController extends Controller
                 'status' => $userAttendanceData->status,
             ];
         }
-
         return view('top', compact('params'));
     }
 
@@ -42,7 +41,7 @@ class AttendanceController extends Controller
 
             $params = [
                 'user_id'  => $loginUserId,
-                'clock_in' => $todayDate::now(),
+                'clock_in' => $todayDate::now()->format('y-m-d H:i:00'),
                 'status'   => 1,
             ];
 
@@ -58,7 +57,7 @@ class AttendanceController extends Controller
                 ->first();
 
             $params = [
-                'clock_out' => $todayDate::now(),
+                'clock_out' => $todayDate::now()->format('y-m-d H:i:00'),
                 'status'    => 2,
             ];
             $userAttendanceData->update($params);
@@ -79,7 +78,7 @@ class AttendanceController extends Controller
 
             $params = [
                 'attendance_id' => $userAttendanceData->id,
-                'rest_in'       => $todayDate::now(),
+                'rest_in'       => $todayDate::now()->format('y-m-d H:i:00'),
             ];
             Rest::create($params);
             return redirect('/attendance');
@@ -103,7 +102,7 @@ class AttendanceController extends Controller
 
             $params = [
                 'attendance_id' => $userAttendanceData->id,
-                'rest_out'       => $todayDate::now(),
+                'rest_out'       => $todayDate::now()->format('y-m-d H:i:00'),
             ];
             $restDates->update($params);
             return redirect('/attendance');
