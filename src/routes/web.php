@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\VerificationController;
@@ -8,9 +9,29 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceListController;
 use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\RequestStampController;
+use App\Http\Controllers\RequestStampAdminController;
+use App\Http\Controllers\StaffListController;
+
+// ルートの場合
+Route::get('/', function () {
+    $previousUrl = url()->previous();
+    if (preg_match("/\wadmin/", $previousUrl, $result)) {
+        if (Auth::guard('admin')->check()) {
+            return redirect($previousUrl);
+        }
+        return redirect('/admin/login');
+    }
+    if (Auth::guard('web')->check()) {
+        return redirect($previousUrl);
+    }
+    return redirect('/login');
+});
 
 // 一般ユーザーのログイン
 Route::get('/login', function () {
+    if (Auth::guard('web')->check()) {
+        return redirect(route('user.dashboard'));
+    }
     return view('auth.login');
 })->name('login');
 
@@ -45,6 +66,9 @@ Route::middleware(['auth:web'])->group(function () {
 
 // 管理者のログイン
 Route::get('/admin/login', function () {
+    if (Auth::guard('admin')->check()) {
+        return view('attendance-admin-list');
+    }
     return view('auth.admin-login');
 })->name('admin.login');
 
@@ -52,9 +76,18 @@ Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest:admin');
 
 Route::middleware(['admin.guard'])->group(function () {
+
     Route::get('/admin/attendance/list', function () {
         return view('attendance-admin-list');
     })->name('admin.dashboard');
+
+    Route::get('/admin/staff/list', [StaffListController::class, 'index'])->name('admin.stafflist');
+    Route::get('/admin/attendance/staff/{id}', [StaffListController::class, 'list'])->name('admin.staffattend');
+    Route::post('/admin/attendance/staff/{id}', [StaffListController::class, 'search'])->name('admin.staffserach');
+
+    Route::get('/stamp_correction_request/list', [RequestStampAdminController::class, 'index'])->name('admin.attendant-req');
+    Route::get('/stamp_correction_request/list/{pageId}', [RequestStampAdminController::class, 'reqindex'])->name('admin.attendant-reqindex');
+    Route::get('/stamp_correction_request/{id}', [RequestStampAdminController::class, 'detail'])->name('admin.attendant-detail');
 });
 
 // ログアウト
