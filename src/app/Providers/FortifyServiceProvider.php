@@ -21,6 +21,7 @@ use App\Http\Requests\AdminLoginRequest;
 // // Fortifyでカスタムフォームリクエストを使うために必要
 // use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 
+
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Auth\RegisterController;
