@@ -6,32 +6,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-list.css') }}" />
 @endsection
 
-
-@section('header-contents')  
-    <header class="page-header">
-      <div class="page-logo">
-        <img src="{{ asset('assets/img/logo.svg') }}" alt="ロゴ COACHTECH" />
-      </div>
-      <div class="page-logo"></div>
-      <nav class="page-menu">
-        <ul>
-          <li><a href="">勤怠一覧</a></li>
-          <li><a href="">スタッフ一覧</a></li>
-          <li><a href="">申請一覧</a></li>
-          @if (Auth::guard('admin')->check())
-            <li>
-              <form action="{{ route('admin.logout') }}" method="post">
-                  @csrf
-                  <button type="submit" class="page-menu-btn">ログアウト</button>
-              </form>
-            </li>
-          @else
-            <li><a href="{{ route('admin.login') }}">ログイン</a></li>
-          @endif        
-        </ul>
-      </nav>
-    </header>
-@endsection
+<x-header-auth>
+</x-header-auth>
 
 @section('main-contents')
 <main class="contents">
@@ -115,9 +91,6 @@
         </tr>
       </tbody>
     </table>
-    <form action="" class="csv-form">
-      <button type="submit" class="form-btn">CSV出力</button>
-    </form>
   </section>
 </main>
 @endsection

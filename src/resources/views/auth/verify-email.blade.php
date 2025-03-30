@@ -6,16 +6,8 @@
     <link rel="stylesheet" href="{{ asset('/assets/css/verify-mail.css') }}">
 @endsection
 
-@section('header-contents')
-    <header class="page-header">
-        <div class="page-logo">
-            <a href="/">
-                <img src="{{asset('/assets/img/logo.svg')}}" alt="ロゴ COACHTECH">
-            </a>
-        </div>
-    </header>
-@endsection
-
+<x-header-mail>
+</x-header-mail>
 @section('main-contents')
     <main class="page-main">
         <div class="container__message">
