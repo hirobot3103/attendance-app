@@ -6,31 +6,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/admin-request-list.css') }}" />
 @endsection
 
-@section('header-contents')  
-  <header class="page-header">
-    <div class="page-logo">
-      <img src="{{ asset('assets/img/logo.svg') }}" alt="ロゴ COACHTECH" />
-    </div>
-    <div class="page-logo"></div>
-    <nav class="page-menu">
-      <ul>
-        <li><a href="">勤怠一覧</a></li>
-        <li><a href="{{ route('admin.stafflist') }}">スタッフ一覧</a></li>
-        <li><a href="">申請一覧</a></li>
-        @if (Auth::guard('web')->check())
-          <li>
-            <form action="{{ route('logout') }}" method="post">
-                @csrf
-                <button type="submit" class="page-menu-btn">ログアウト</button>
-            </form>
-          </li>
-        @else
-          <li><a href="{{ route('login') }}">ログイン</a></li>
-        @endif
-      </ul>
-    </nav>
-  </header>
-@endsection
+<x-header-auth>
+</x-header-auth>
 
 @section('main-contents')
     <main class="contents">
