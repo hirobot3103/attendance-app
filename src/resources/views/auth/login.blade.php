@@ -6,15 +6,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}" />
 @endsection
 
-@section('header-contents')
-    <header class="page-header">
-      <div class="page-logo">
-        <img src="{{ asset('assets/img/logo.svg') }}" alt="ロゴ COACHTECH" />
-      </div>
-      <div class="page-logo"></div>
-      <nav class="page-menu"></nav>
-    </header>
-@endsection
+<x-header-nolink>
+</x-header-nolink>
 
 @section('main-contents')
     <main class="contents">

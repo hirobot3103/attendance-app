@@ -213,3 +213,7 @@ body {
     border-radius: 0.5vw;
     cursor: pointer;
 }
+
+.admin-list-btn {
+    cursor: pointer;
+}
