@@ -9,7 +9,7 @@
     @yield('css')
   </head>
   <body>
-    @yield('header-contents')
+    {{-- @yield('header-contents') --}}
     @yield('main-contents')
   </body>
 </html>

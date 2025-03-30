@@ -27,6 +27,14 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+// // 作業位置
+// // 申請関係は、URLが同じなので、コントローラー内で切り分ける
+// Route::middleware('verified')->group(function () {
+//     Route::get('/stamp_correction_request/list', [RequestStampController::class, 'index'])->name('user.attendant-req');
+//     Route::get('/stamp_correction_request/list/{pageId}', [RequestStampController::class, 'reqindex'])->name('user.attendant-reqindex');
+//     Route::get('/stamp_correction_request/{id}', [RequestStampController::class, 'detail'])->name('user.attendant-detail');
+// });
+
 // 一般ユーザーのログイン
 Route::get('/login', function () {
     if (Auth::guard('web')->check()) {
@@ -58,9 +66,9 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/attendance/{id}', [AttendanceDetailController::class, 'detail'])->name('user.attendant-detail');
         Route::post('/attendance/{id}', [AttendanceDetailController::class, 'modify'])->name('user.attendant-mod');
 
-        Route::get('/stamp_correction_request/list', [RequestStampController::class, 'index'])->name('user.attendant-req');
-        Route::get('/stamp_correction_request/list/{pageId}', [RequestStampController::class, 'reqindex'])->name('user.attendant-reqindex');
-        Route::get('/stamp_correction_request/{id}', [RequestStampController::class, 'detail'])->name('user.attendant-detail');
+        Route::get('/stamp_correction_request/list', [RequestStampController::class, 'index'])->name('attendant-req');
+        Route::get('/stamp_correction_request/list/{pageId}', [RequestStampController::class, 'reqindex'])->name('attendant-reqindex');
+        Route::get('/stamp_correction_request/{id}', [RequestStampController::class, 'detail'])->name('attendant-detail');
     });
 });
 
@@ -84,10 +92,11 @@ Route::middleware(['admin.guard'])->group(function () {
     Route::get('/admin/staff/list', [StaffListController::class, 'index'])->name('admin.stafflist');
     Route::get('/admin/attendance/staff/{id}', [StaffListController::class, 'list'])->name('admin.staffattend');
     Route::post('/admin/attendance/staff/{id}', [StaffListController::class, 'search'])->name('admin.staffserach');
+    Route::post('/admin/attendance/staff/detail/{id}', [StaffListController::class, 'detail'])->name('admin.staffdetail');
 
-    Route::get('/stamp_correction_request/list', [RequestStampAdminController::class, 'index'])->name('admin.attendant-req');
-    Route::get('/stamp_correction_request/list/{pageId}', [RequestStampAdminController::class, 'reqindex'])->name('admin.attendant-reqindex');
-    Route::get('/stamp_correction_request/{id}', [RequestStampAdminController::class, 'detail'])->name('admin.attendant-detail');
+    Route::get('/stamp_correction_request/list', [RequestStampController::class, 'index'])->name('attendant-req');
+    Route::get('/stamp_correction_request/list/{pageId}', [RequestStampController::class, 'reqindex'])->name('attendant-reqindex');
+    Route::get('/stamp_correction_request/{id}', [RequestStampController::class, 'detail'])->name('attendant-detail');
 });
 
 // ログアウト
