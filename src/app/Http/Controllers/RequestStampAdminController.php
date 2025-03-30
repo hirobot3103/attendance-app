@@ -19,8 +19,6 @@ class RequestStampAdminController extends Controller
             $requestDates = Request_Attendance::where('status', 15)->orderBy('clock_in')->get();
         }
         $requestName  = User::all();
-
-
         return view('request-admin-list', compact('requestDates', 'requestName'));
     }
 
@@ -58,6 +56,6 @@ class RequestStampAdminController extends Controller
             'descript'  => $reqDescript,
             'status'    => $reqStat,
         ];
-        return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
+        return view('attendance-admin-detail', compact('dispDetailDates', 'attendanceRestDates'));
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Request_Attendance;
 use App\Models\Request_Rest;
 use App\Models\User;
 
+// adminかwebかで処理を分岐
 class RequestStampController extends Controller
 {
 
@@ -18,6 +19,7 @@ class RequestStampController extends Controller
         } else {
             $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', 15)->orderBy('clock_in')->get();
         }
+        // Auth::guard('admin')->check()
         $requestName  = User::where('id', Auth::user()->id)->first();
         return view('request-user-list', compact('requestDates', 'requestName'));
     }
