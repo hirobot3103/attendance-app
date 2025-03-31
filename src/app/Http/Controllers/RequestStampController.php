@@ -14,14 +14,25 @@ class RequestStampController extends Controller
 
     private function actionMain($pageId)
     {
-        if ($pageId == 15) {
-            $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', '<>', $pageId)->orderBy('clock_in')->get();
+        if (Auth::guard('admin')->check()) {
+
+            if ($pageId == 15) {
+                $requestDates = Request_Attendance::where('status', '<>', $pageId)->orderBy('clock_in')->get();
+            } else {
+                $requestDates = Request_Attendance::where('status', 15)->orderBy('clock_in')->get();
+            }
+            $requestName  = User::all();
+            return view('request-admin-list', compact('requestDates', 'requestName'));
         } else {
-            $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', 15)->orderBy('clock_in')->get();
+
+            if ($pageId == 15) {
+                $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', '<>', $pageId)->orderBy('clock_in')->get();
+            } else {
+                $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', 15)->orderBy('clock_in')->get();
+            }
+            $requestName  = User::where('id', Auth::user()->id)->first();
+            return view('request-user-list', compact('requestDates', 'requestName'));
         }
-        // Auth::guard('admin')->check()
-        $requestName  = User::where('id', Auth::user()->id)->first();
-        return view('request-user-list', compact('requestDates', 'requestName'));
     }
 
     public function index()
@@ -36,28 +47,54 @@ class RequestStampController extends Controller
 
     public function detail(int $id)
     {
-        $attendanceUserName  = User::where('id', Auth::user()->id)->first();
+        if (Auth::guard('admin')->check()) {
+            $attendanceUserName  = User::where('id', Auth::user()->id)->first();
 
-        $attendanceDetailDates = Request_Attendance::where('id', $id)->first();
-        $attendanceRestDates = Request_Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])->get();
+            $attendanceDetailDates = Request_Attendance::where('id', $id)->first();
+            $attendanceRestDates = Request_Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])->get();
 
-        $reqId = $id;
-        $reqDate = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
-        $reqName = $attendanceUserName->name;
-        $reqClockIn = $attendanceDetailDates->clock_in;
-        $reqClockOut = $attendanceDetailDates->clock_out;
-        $reqDescript = $attendanceDetailDates->descript;
-        $reqStat = $attendanceDetailDates->status;
+            $reqId = $id;
+            $reqDate = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
+            $reqName = $attendanceUserName->name;
+            $reqClockIn = $attendanceDetailDates->clock_in;
+            $reqClockOut = $attendanceDetailDates->clock_out;
+            $reqDescript = $attendanceDetailDates->descript;
+            $reqStat = $attendanceDetailDates->status;
 
-        $dispDetailDates[] = [
-            'id' => $reqId,
-            'dateline' => $reqDate,
-            'name' => $reqName,
-            'clock_in' => $reqClockIn,
-            'clock_out' => $reqClockOut,
-            'descript'  => $reqDescript,
-            'status'    => $reqStat,
-        ];
-        return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
+            $dispDetailDates[] = [
+                'id' => $reqId,
+                'dateline' => $reqDate,
+                'name' => $reqName,
+                'clock_in' => $reqClockIn,
+                'clock_out' => $reqClockOut,
+                'descript'  => $reqDescript,
+                'status'    => $reqStat,
+            ];
+            return view('attendance-admin-detail', compact('dispDetailDates', 'attendanceRestDates'));
+        } else {
+            $attendanceUserName  = User::where('id', Auth::user()->id)->first();
+
+            $attendanceDetailDates = Request_Attendance::where('id', $id)->first();
+            $attendanceRestDates = Request_Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])->get();
+
+            $reqId = $id;
+            $reqDate = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
+            $reqName = $attendanceUserName->name;
+            $reqClockIn = $attendanceDetailDates->clock_in;
+            $reqClockOut = $attendanceDetailDates->clock_out;
+            $reqDescript = $attendanceDetailDates->descript;
+            $reqStat = $attendanceDetailDates->status;
+
+            $dispDetailDates[] = [
+                'id' => $reqId,
+                'dateline' => $reqDate,
+                'name' => $reqName,
+                'clock_in' => $reqClockIn,
+                'clock_out' => $reqClockOut,
+                'descript'  => $reqDescript,
+                'status'    => $reqStat,
+            ];
+            return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
+        }
     }
 }

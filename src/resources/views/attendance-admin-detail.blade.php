@@ -6,8 +6,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
 @endsection
 
-<x-header-auth>
-</x-header-auth>
+@section('header-contents')
+  <x-header-auth></x-header-auth>
+@endsection  
 
 @section('main-contents')
 @php
