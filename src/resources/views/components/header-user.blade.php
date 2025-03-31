@@ -7,7 +7,7 @@
     <ul>
       <li><a href="{{ route('user.dashboard') }}">勤怠</a></li>
       <li><a href="{{ route('user.attendant-list') }}">勤怠一覧</a></li>
-      <li><a href="{{ route('user.attendant-req') }}">申請</a></li>
+      <li><a href="{{ route('attendant-req') }}">申請</a></li>
       @if (Auth::guard('web')->check())
         <li>
           <form action="{{ route('logout') }}" method="post">

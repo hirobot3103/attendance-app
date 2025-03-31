@@ -6,8 +6,10 @@
     <link rel="stylesheet" href="{{ asset('/assets/css/verify-mail.css') }}">
 @endsection
 
-<x-header-mail>
-</x-header-mail>
+@section('header-contents')
+<x-header-mail></x-header-mail>
+@endsection
+
 @section('main-contents')
     <main class="page-main">
         <div class="container__message">
