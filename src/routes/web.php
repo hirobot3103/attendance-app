@@ -7,12 +7,13 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceListController;
+use App\Http\Controllers\AttendanceAdminListController;
 use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\RequestStampController;
-use App\Http\Controllers\RequestStampAdminController;
 use App\Http\Controllers\StaffListController;
 
 // ルートの場合
+// ログインの状況に応じて表示先を切り替える
 Route::get('/', function () {
     $previousUrl = url()->previous();
     if (preg_match("/\wadmin/", $previousUrl, $result)) {
@@ -43,9 +44,7 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest:web');
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:web');
 
 Route::middleware(['auth:web'])->group(function () {
 
@@ -69,32 +68,28 @@ Route::middleware(['auth:web'])->group(function () {
     });
 });
 
+// 一般ユーザーのログアウト
+Route::post('/logout', [LogoutController::class, 'userLogout'])->name('logout');
+
 // 管理者のログイン
 Route::get('/admin/login', function () {
     if (Auth::guard('admin')->check()) {
-        return view('attendance-admin-list');
+        return redirect(route('admin.dashboard'));
     }
     return view('auth.admin-login');
 })->name('admin.login');
 
-Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest:admin');
+Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:admin');
 
 Route::middleware(['admin.guard'])->group(function () {
 
-    Route::get('/admin/attendance/list', function () {
-        return view('attendance-admin-list');
-    })->name('admin.dashboard');
+    Route::get('/admin/attendance/list', [AttendanceAdminListController::class, 'index'])->name('admin.dashboard');
 
     Route::get('/admin/staff/list', [StaffListController::class, 'index'])->name('admin.stafflist');
     Route::get('/admin/attendance/staff/{id}', [StaffListController::class, 'list'])->name('admin.staffattend');
     Route::post('/admin/attendance/staff/{id}', [StaffListController::class, 'search'])->name('admin.staffserach');
     Route::post('/admin/attendance/staff/detail/{id}', [StaffListController::class, 'detail'])->name('admin.staffdetail');
 });
-
-// ログアウト
-// 一般ユーザーのログアウト
-Route::post('/logout', [LogoutController::class, 'userLogout'])->name('logout');
 
 // 管理者のログアウト
 Route::post('/admin/logout', [LogoutController::class, 'adminLogout'])->name('admin.logout');
