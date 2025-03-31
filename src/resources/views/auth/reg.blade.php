@@ -6,8 +6,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/reg.css') }}" />
 @endsection
 
-<x-header-nolink>
-</x-header-nolink>
+@section('header-contents')
+  <x-header-nolink></x-header-nolink>
+@endsection
 
 @section('main-contents')
 <main class="contents">

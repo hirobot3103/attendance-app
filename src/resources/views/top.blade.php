@@ -6,8 +6,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/top.css') }}" />
 @endsection
 
-<x-header-user>
-</x-header-user>
+@section('header-contents')
+  <x-header-user></x-header-user>
+@endsection  
 
 @section('main-contents')
   @php
