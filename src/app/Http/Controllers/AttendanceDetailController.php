@@ -16,65 +16,71 @@ class AttendanceDetailController extends Controller
     {
         $attendanceUserName  = User::where('id', Auth::user()->id)->first();
 
-        if ($id == 0) {
-            if ($request->has('tid')) {
-
-                // 勤怠未登録の日に既に申請が行われている場合のチェック
-                // ->reqstatをセット
-                $requested_Attendance = Attendance::where('user_id', Auth::user()->id)->whereDate('clock_in', $request['tid'])->first();
-
-                $statValue = 0;
-                if (!empty($requested_Attendance)) {
-                    $statValue = $requested_Attendance['status'];
-                }
-
-                $reqId = $id;
-                $reqDate = $request->tid;
-                $reqName = $attendanceUserName->name;
-                $reqClockIn = "";
-                $reqClockOut = "";
-                $reqDescript = "";
-                $reqStat = $statValue;
-
-                $attendanceRestDates[] = [
-                    'id'            => 0,
-                    'attendance_id' => 0,
-                    'rest_in' => "",
-                    'rest_out' => "",
-                ];
-            }
-        } else {
+        if ($id <> 0) {
             $attendanceDetailDates = Attendance::where('id', $id)->first();
-            $attendanceRestDates = Rest::where('attendance_id', $attendanceDetailDates->id)->get();
-
+            $attendanceRestDates = Rest::where('attendance_id', $attendanceDetailDates['id'])->get();
             $reqId = $id;
-            $reqDate = $request->tid;
+            $reqUserId = $request->uid;
+            $reqDate = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
             $reqName = $attendanceUserName->name;
             $reqClockIn = $attendanceDetailDates->clock_in;
             $reqClockOut = $attendanceDetailDates->clock_out;
             $reqDescript = $attendanceDetailDates->descript;
             $reqStat = $attendanceDetailDates->status;
+        } else {
+            $reqDate = date('Y-m-d', strtotime($request->tid));
+            $startTime = $request->tid . ' 00:00:00';
+            $endTime   = $request->tid . ' 23:59:59';
+            $queryReq = Request_Attendance::whereBetween('clock_in', [$startTime, $endTime])
+                ->where('user_id', $attendanceUserName['id']);
+            $userAttendanceDatas = $queryReq->orderBy('clock_in', 'asc')->first();
+            if (empty($userAttendanceDatas)) {
+                $reqId = $id;
+                $reqClockIn = "";
+                $reqClockOut = "";
+                $reqStat = 14;  // 新規追加申請
+
+            } else {
+                $reqId = $userAttendanceDatas['id'];
+                $reqClockIn = "";
+                $reqClockOut = "";
+                $reqStat = $userAttendanceDatas['status'];
+            }
+            $reqUserId = $request->uid;
+            $reqName = $attendanceUserName->name;
+            $reqDescript = "";
+
+            $attendanceRestDates = [];
         }
+
         $dispDetailDates[] = [
             'id' => $reqId,
+            'target_id' => $reqUserId,
             'dateline' => $reqDate,
             'name' => $reqName,
             'clock_in' => $reqClockIn,
             'clock_out' => $reqClockOut,
             'descript'  => $reqDescript,
             'status'    => $reqStat,
+            'gardFlg'   => 1,
         ];
-
         return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
     }
 
     public function modify(Request $request, int $id)
     {
-
         // フォームリクエストのセット
+        if ($id <> 0) {
+            $attendId = $id;
+        } else {
+            // 新規作成の場合、レコードを作っておく
+            $tmpAttendanceData = new Attendance();
+            $tmpNewData = $tmpAttendanceData->create(['user_id' => Auth::user()->id]);
+            $attendId = $tmpNewData['id'];
+        }
         $dispDetailDates[] = [
             'user_id' => Auth::user()->id,
-            'attendance_id' => $id,
+            'attendance_id' => $attendId,
             'dateline' => $request->dateline,
             'name' => $request->name,
             'clock_in' => $request->attendance_clockin,
@@ -84,21 +90,42 @@ class AttendanceDetailController extends Controller
         ];
         $maxCount = $request->restSectMax;
 
+        // 休憩データがあれば
         if ($request->rest_clockin <> "" or $request->rest_clockout <> "") {
 
+            if ($request->rest_id <> 0) {
+                $restId = $request->rest_id;
+            } else {
+                // 新規作成の場合、レコードを作っておく
+                $tmpRestData = new Rest();
+                $tmpNewRestData = $tmpRestData->create(['attendance_id' => $attendId]);
+                $restId = $tmpNewRestData['id'];
+            }
+
             $attendanceRestDates[] = [
-                'rest_id'               => $request->rest_id,
-                'request_attendance_id' => $id,
+                'rest_id'               => $restId,
+                'request_attendance_id' => $attendId,
                 'rest_in'               => $request->rest_clockin,
                 'rest_out'              => $request->rest_clockout,
             ];
         }
         if ($maxCount > 0) {
             for ($counter = 1; $counter <= $maxCount; $counter++) {
+                $tmpNewRestData = [];
                 if ($request['rest_clockin' . $counter] <> "" or $request['rest_clockout' . $counter] <> "") {
+
+                    if ($request['rest_id' . $counter] <> 0) {
+                        $restId = $request['rest_id' . $counter];
+                    } else {
+                        // 新規作成の場合、レコードを作っておく
+                        $tmpRestData = new Rest();
+                        $tmpNewRestData = $tmpRestData->create(['attendance_id' => $attendId]);
+                        $restId = $tmpNewRestData['id'];
+                    }
+
                     $attendanceRestDates[] = [
-                        'rest_id'  => $request['rest_id' . $counter],
-                        'request_attendance_id' => $id,
+                        'rest_id'  => $restId,
+                        'request_attendance_id' => $attendId,
                         'rest_in'  => $request['rest_clockin' . $counter],
                         'rest_out' => $request['rest_clockout' . $counter],
                     ];
@@ -162,17 +189,6 @@ class AttendanceDetailController extends Controller
         $attendanceInstance->status        = $dispDetailDatesMain[0]['status'];
         $attendanceInstance->save();
 
-        // $params = [
-        //     'user_id'       => $dispDetailDatesMain[0]['user_id'],
-        //     'attendance_id' => $dispDetailDatesMain[0]['attendance_id'],
-        //     'clock_in'      => $dispDetailDatesMain[0]['clock_in'],
-        //     'clock_out'     => $dispDetailDatesMain[0]['clock_out'],
-        //     'descript'      => $dispDetailDatesMain[0]['descript'],
-        //     'status'        => $dispDetailDatesMain[0]['status'],
-        // ];
-        // Request_Attendance::create($params);
-        // dd($params);
-
         // 該当する勤怠データのステータスを変更
         Attendance::where('id', $dispDetailDatesMain[0]['attendance_id'])->update(['status' => $dispDetailDatesMain[0]['status']]);
 
@@ -193,8 +209,6 @@ class AttendanceDetailController extends Controller
         }
 
         // 勤怠一覧へレダイレクト
-        return redirect('/stamp_correction_request/list');
-
-        // return redirect('/attendance/list');
+        return redirect('/attendance/list');
     }
 }
