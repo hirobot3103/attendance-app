@@ -143,10 +143,10 @@
         </div>
       </div>
 
-      @if ( $dispDetailDates[0]['status'] ==15 )
+      @if ( $dispDetailDates[0]['status'] == 15 )
         <p class="request-stat">*この申請は承認されているため、修正はできません。</p>
       @else
-        <form action="/attendance/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
+        <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
           @csrf
           <button type="submit" class="form-btn">承　認</button>
           <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">

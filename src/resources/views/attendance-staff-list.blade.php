@@ -83,6 +83,8 @@
                   <form action="/admin/attendance/staff/detail/{{ $dayData['id'] }}" method="POST" class="admin-list-btn">
                     @csrf
                     <button type="submit">詳細</button>
+                    <input type="hidden" name="tid" value={{ $tidDate }}>
+                    <input type="hidden" name="uid" value={{ $dayData['target_id'] }}>
                   </form>
                 </td>
               </tr>
