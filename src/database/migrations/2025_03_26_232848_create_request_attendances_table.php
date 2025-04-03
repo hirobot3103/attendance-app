@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('request_attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->integer('attendance_id');
+            $table->foreignId('user_id')->constrained('users');  // 対象ユーザーID
+            $table->integer('attendance_id');                    // 対象勤怠データID
             $table->dateTime('clock_in')->nullable();  // 就業開始日時
             $table->dateTime('clock_out')->nullable(); // 就業終了日時
             $table->integer('status')->default(0);     // 0:デフォルト(就業前)、11～13:申請中 14:申請済

@@ -13,20 +13,22 @@
 @section('main-contents')
 <main class="contents">
   <section class="contents__lists-area">
-    <div class="attendance-title">XXXX年XX月XX日の勤怠</div>
-    <form class="attendance-month">
-      <button class="attendance-month__prev" name="month_prev">
+    <div class="attendance-title">{{ $navLinkDate['year'] }}年{{ $navLinkDate['month'] }}月{{ $navLinkDate['day'] }}日({{ $navLinkDate['dayname'] }})の勤怠</div>
+    <form id="nav_header" class="attendance-month" action="{{ route('admin.attendant-serch') }}" method="POST">
+      @csrf
+      <button class="attendance-month__prev" name="day_prev">
         <span>&larr;</span>前日
       </button>
-      <label for="month__current" class="attendance-month__label">
+      <label for="day__current" class="attendance-month__label">
         <input
           type="date"
           class="attendance-month__current"
-          name="month__current"
-          id="month__current"
+          name="day__current"
+          id="day__current"
+          value="{{ $navLinkDate['baseDay'] }}"
         />
       </label>
-      <button class="attendance-month__next" name="month_next">
+      <button class="attendance-month__next" name="day_next">
         翌日<span>&rarr;</span>
       </button>
     </form>
@@ -42,56 +44,62 @@
         </tr>
       </thead>
       <tbody>
+        @foreach( $dispAttendanceDatas as $dayData )
+          @php
+            $defRest = '';
+            $defTotal = '';
+
+            $retDiff = '0:00';
+            $hours = floor((int)$dayData['def_rest'] / 60);
+            $remainingMinutes = (int)$dayData['def_rest'] % 60;
+            if($remainingMinutes < 10){
+              $retDiff ="{$hours}:0{$remainingMinutes}";                  
+            } else {
+              $retDiff ="{$hours}:{$remainingMinutes}";                                    
+            }
+            $defRest = $retDiff;
+
+            $retDiff = '0:00';
+            $hours = floor((int)$dayData['total_attendance'] / 60);
+            $remainingMinutes = (int)$dayData['total_attendance'] % 60;
+            if($remainingMinutes < 10){
+              $retDiff ="{$hours}:0{$remainingMinutes}";                  
+            } else {
+              $retDiff ="{$hours}:{$remainingMinutes}";                                    
+            }
+            $defTotal = $retDiff;
+
+            $tidDate = $navLinkDate['baseDay'];
+          @endphp
         <tr>
-          <td>testman</td>
-          <td>09:00</td>
-          <td>18:00</td>
-          <td>1:00</td>
-          <td>8:00</td>
-          <td class="attendance-list__detail"><a href="">詳細</a></td>
+          <td>{{ $dayData['name'] }}</td>
+          <td>{{ $dayData['clock_in'] }}</td>
+          <td>{{ $dayData['clock_out'] }}</td>
+          <td>{{ $defRest }}</td>
+          <td>{{ $defTotal }}</td>
+          <td class="attendance-list__detail">
+            <form action="/admin/attendance/staff/detail/{{ $dayData['id'] }}" method="POST" class="admin-list-btn">
+              @csrf
+              <button type="submit">詳細</button>
+              <input type="hidden" name="tid" value={{ $tidDate }}>
+              <input type="hidden" name="uid" value={{ $dayData['user_id'] }}>
+
+            </form>
+          </td>
+          {{-- <td class="attendance-list__detail">
+            <a href="/admin/attendance/staff/detail/{{ $dayData['id'] }}?tid={{ $tidDate }}&uid={{ $dayData['user_id'] }}">詳細</a>
+          </td> --}}
         </tr>
-        <tr>
-          <td>testman2</td>
-          <td>09:00</td>
-          <td>18:00</td>
-          <td>1:00</td>
-          <td>8:00</td>
-          <td class="attendance-list__detail"><a href="">詳細</a></td>
-        </tr>
-        <tr>
-          <td>testman3</td>
-          <td>09:00</td>
-          <td>18:00</td>
-          <td>1:00</td>
-          <td>8:00</td>
-          <td class="attendance-list__detail"><a href="">詳細</a></td>
-        </tr>
-        <tr>
-          <td>testman4</td>
-          <td>09:00</td>
-          <td>18:00</td>
-          <td>1:00</td>
-          <td>8:00</td>
-          <td class="attendance-list__detail"><a href="">詳細</a></td>
-        </tr>
-        <tr>
-          <td>testman5</td>
-          <td>09:00</td>
-          <td>18:00</td>
-          <td>1:00</td>
-          <td>8:00</td>
-          <td class="attendance-list__detail"><a href="">詳細</a></td>
-        </tr>
-        <tr>
-          <td>testman6</td>
-          <td>09:00</td>
-          <td>18:00</td>
-          <td>1:00</td>
-          <td>8:00</td>
-          <td class="attendance-list__detail"><a href="">詳細</a></td>
-        </tr>
+        @endforeach
       </tbody>
     </table>
   </section>
 </main>
+<script>
+  async function sendData(data) {
+    document.forms["nav_header"].submit();
+  }
+  const send = document.querySelector("#day__current");
+  send.addEventListener("change", sendData);
+</script>
 @endsection
