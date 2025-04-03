@@ -3,7 +3,11 @@
 @section('subtitle','勤怠詳細画面')
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/attendance-detail.css') }}" />
+    @if ($dispDetailDates[0]['gardFlg'] == 1)
+      <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
+    @else
+      <link rel="stylesheet" href="{{ asset('assets/css/attendance-detail.css') }}" />
+    @endif
 @endsection
 
 @section('header-contents')
@@ -146,9 +150,10 @@
       @if ( $dispDetailDates[0]['status'] >=11 && $dispDetailDates[0]['status'] <=13 )
         <p class="request-stat">*承認待ちのため修正はできません。</p>
       @else
-        <form action="/attendance/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
+        <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
           @csrf
-          <button type="submit" class="form-btn">修正</button>
+          <button type="submit" class="form-btn" name="admin_btn_mod">修  正</button>
+          <input type="hidden" value="{{ $dispDetailDates[0]['target_id'] }}" name="user_id">
           <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
           <input type="hidden" value="{{ $dispDetailDates[0]['dateline'] }}" name="dateline">
           <input type="hidden" value="{{ $dispDetailDates[0]['status'] }}" name="status">

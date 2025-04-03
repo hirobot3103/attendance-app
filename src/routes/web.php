@@ -34,6 +34,7 @@ Route::middleware('verified')->group(function () {
     Route::get('/stamp_correction_request/list', [RequestStampController::class, 'index'])->name('attendant-req');
     Route::get('/stamp_correction_request/list/{pageId}', [RequestStampController::class, 'reqindex'])->name('attendant-reqindex');
     Route::get('/stamp_correction_request/{id}', [RequestStampController::class, 'detail'])->name('attendant-detail');
+    Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [RequestStampController::class, 'approve'])->name('attendant-approve');
 });
 
 // 一般ユーザーのログイン
@@ -84,6 +85,8 @@ Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->m
 Route::middleware(['admin.guard'])->group(function () {
 
     Route::get('/admin/attendance/list', [AttendanceAdminListController::class, 'index'])->name('admin.dashboard');
+    Route::post('/admin/attendance/list', [AttendanceAdminListController::class, 'search'])->name('admin.attendant-serch');
+
 
     Route::get('/admin/staff/list', [StaffListController::class, 'index'])->name('admin.stafflist');
     Route::get('/admin/attendance/staff/{id}', [StaffListController::class, 'list'])->name('admin.staffattend');
