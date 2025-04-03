@@ -6,13 +6,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
+use App\Models\Request_Attendance;
 use App\Models\Rest;
+use App\Models\Request_Rest;
 use App\Models\User;
 use Carbon\Carbon;
 
 class AttendanceAdminListController extends Controller
 {
 
+    // 通算勤務時間（休憩含む）を取得
     private function getAttendanceTimes($date)
     {
         $startTime = new Carbon($date->clock_in);
@@ -20,6 +23,7 @@ class AttendanceAdminListController extends Controller
         return $startTime->diffInMinutes($endTime);
     }
 
+    // 通算休憩時間を取得
     private function getRestTimes($attendId)
     {
         return DB::table('rests')
@@ -28,6 +32,7 @@ class AttendanceAdminListController extends Controller
             ->sum(DB::raw('TIMESTAMPDIFF(MINUTE, rest_in, rest_out)'));
     }
 
+    // 曜日ごとに割り振られた数値を曜日（文字）へ変換
     private function setDayName($formatdayName)
     {
         $retString = "";
@@ -71,13 +76,9 @@ class AttendanceAdminListController extends Controller
 
         $loginUserId = Auth::user()->id;
 
-        // dd($dateStart);
         $query = Attendance::whereBetween('clock_in', [$dateStart, $dateEnd]);
-        $userAttendanceDatas = $query->orderBy('clock_in', 'asc')->get();
+        $userAttendanceDatas = $query->orderBy('clock_in', 'asc')->orderBy('id', 'asc')->get();
         $userRestDates = $query->with('rests')->get();
-
-        // dd($userAttendanceDatas);
-
         $dispAttendanceDatas = [];
         $titleBaseDate = new Carbon($todayDate);
         $formatDate = $titleBaseDate->format('Y/m/d');
@@ -90,6 +91,7 @@ class AttendanceAdminListController extends Controller
             foreach ($userDatas as $userInfo) {
 
                 $recordId = 0;
+                $recordUserId = $userInfo['id'];
                 $recordName = $userInfo['name'];
                 $recordDate = $titleBaseDate;
                 $recordClockIn = "";
@@ -97,7 +99,6 @@ class AttendanceAdminListController extends Controller
                 $recordDiffMin = 0;
                 $recordDiffRest = 0;
                 $recordDiffTotal = 0;
-
                 if (!empty($userAttendanceDatas)) {
 
                     // 該当する日に勤怠データあれば、値をセット
@@ -116,18 +117,20 @@ class AttendanceAdminListController extends Controller
                     }
                 }
                 $dispAttendanceDatas[] = [
-                    'id' => $recordId,
-                    'name' => $recordName,
-                    'date' => $recordDate,
-                    'clock_in' => $recordClockIn,
-                    'clock_out' => $recordClockOut,
-                    'def_attendance' => $recordDiffMin,
-                    'def_rest'       => $recordDiffRest,
-                    'total_attendance' => $recordDiffTotal,
+                    'id'               => $recordId,
+                    'user_id'          => $recordUserId,
+                    'name'             => $recordName,      // ユーザー名
+                    'date'             => $recordDate,      // 日付(Y-m-d)
+                    'clock_in'         => $recordClockIn,   // 勤務開始時間
+                    'clock_out'        => $recordClockOut,  // 退勤時間
+                    'def_attendance'   => $recordDiffMin,   // 通算勤務時間（休憩含む）
+                    'def_rest'         => $recordDiffRest,  // 通算休憩時間
+                    'total_attendance' => $recordDiffTotal, // 通算勤務時間(休憩を差し引いた時間)
                 ];
             }
         }
 
+        // 日付カレンダー関連情報
         $navLinkDate = [
             'baseDay' => $monthDate->format('Y-m-d'),
             'year'      => $currentYear,
@@ -137,8 +140,6 @@ class AttendanceAdminListController extends Controller
             'dayname'   => $formatDayName,
         ];
 
-        // データ取得までOK
-        dd($dispAttendanceDatas);
         return view('attendance-admin-list', compact('navLinkDate', 'dispAttendanceDatas'));
     }
 
@@ -158,7 +159,7 @@ class AttendanceAdminListController extends Controller
         } elseif ($request->has('day_next')) {
             $paramDay = $mode->addDay()->format('Y-m-d');
         } else {
-            $paramDay = $mode->format('Y-m-01');
+            $paramDay = $mode->format('Y-m-d');
         }
 
         return  $this->actionMain($paramDay);

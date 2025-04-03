@@ -168,30 +168,60 @@ class StaffListController extends Controller
 
         return  $this->actionMain($paramMonth, $paramId);
     }
-    // oo
-    public function detail(int $id)
+
+    public function detail(Request $request, int $id)
     {
-        $attendanceUserName  = User::where('id', Auth::user()->id)->first();
+        if ($request->has('uid')) {
+            $attendanceUserName  = User::where('id', $request->uid)->first();
+        }
 
-        $attendanceDetailDates = Attendance::where('id', $id)->first();
-        $attendanceRestDates = Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])->get();
+        if ($id <> 0) {
+            $attendanceDetailDates = Attendance::where('id', $id)->first();
+            $attendanceRestDates = Rest::where('attendance_id', $attendanceDetailDates['id'])->get();
+            $reqId = $id;
+            $reqUserId = $request->uid;
+            $reqDate = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
+            $reqName = $attendanceUserName->name;
+            $reqClockIn = $attendanceDetailDates->clock_in;
+            $reqClockOut = $attendanceDetailDates->clock_out;
+            $reqDescript = $attendanceDetailDates->descript;
+            $reqStat = $attendanceDetailDates->status;
+        } else {
+            $reqDate = date('Y-m-d', strtotime($request->tid));
+            $startTime = $request->tid . ' 00:00:00';
+            $endTime   = $request->tid . ' 23:59:59';
+            $queryReq = Request_Attendance::whereBetween('clock_in', [$startTime, $endTime])
+                ->where('user_id', $attendanceUserName['id']);
+            $userAttendanceDatas = $queryReq->orderBy('clock_in', 'asc')->first();
+            if (empty($userAttendanceDatas)) {
+                $reqId = $id;
+                $reqClockIn = "";
+                $reqClockOut = "";
+                $reqStat = 14;  // 新規追加申請
 
-        $reqId = $id;
-        $reqDate = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
-        $reqName = $attendanceUserName->name;
-        $reqClockIn = $attendanceDetailDates->clock_in;
-        $reqClockOut = $attendanceDetailDates->clock_out;
-        $reqDescript = $attendanceDetailDates->descript;
-        $reqStat = $attendanceDetailDates->status;
+            } else {
+                $reqId = $userAttendanceDatas['id'];
+                $reqClockIn = "";
+                $reqClockOut = "";
+                $reqStat = $userAttendanceDatas['status'];
+            }
+            $reqUserId = $request->uid;
+            $reqName = $attendanceUserName->name;
+            $reqDescript = "";
+
+            $attendanceRestDates = [];
+        }
 
         $dispDetailDates[] = [
             'id' => $reqId,
+            'target_id' => $reqUserId,
             'dateline' => $reqDate,
             'name' => $reqName,
             'clock_in' => $reqClockIn,
             'clock_out' => $reqClockOut,
             'descript'  => $reqDescript,
             'status'    => $reqStat,
+            'gardFlg'   => 1,
         ];
         return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
     }
