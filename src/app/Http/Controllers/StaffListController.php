@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Date;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\Rest;
-
 use App\Models\Request_Attendance;
-use App\Models\Request_Rest;
-
 use Carbon\Carbon;
 
 class StaffListController extends Controller
@@ -60,7 +58,46 @@ class StaffListController extends Controller
         return $retString;
     }
 
-    private function actionMain($targetDate, $id)
+    private function export($linkData, $csvData)
+    {
+        $dateBaseData = $linkData['year'] . '/';
+        $csvFileName = 'attendance_userid' . $csvData[0]['target_id'] . '_' . $linkData['year'] . $linkData['month'] . '.csv';
+        $csvHeader = [
+            "id",                // 勤怠DBに割り振られたid(勤務なし = 0)
+            "date",              // 日付
+            "target_id",         // 一般ユーザーのID
+            "user_name",         // 一般ユーザー名
+            "clock_in",          // 勤務開始時間
+            "clock_out",         // 勤務終了時間
+            "def_attendance",    // 勤務時間（休憩考慮なし）
+            "def_rest",          // 休憩時間通算
+            "total_attendance",  // 勤務時間（休憩考慮あり）
+        ];
+
+        $response = new StreamedResponse(function () use ($csvHeader, $dateBaseData, $csvData) {
+            $createCsvFile = fopen('php://output', 'w');
+
+            mb_convert_variables('SJIS-win', 'UTF-8', $csvHeader);
+
+            fputcsv($createCsvFile, $csvHeader);
+
+            foreach ($csvData as $csv) {
+
+                $csv['date'] = $dateBaseData . $csv['date'];
+                fputcsv($createCsvFile, $csv);
+            }
+
+            fclose($createCsvFile);
+        }, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename= "' . $csvFileName . '"',
+        ]);
+
+        return $response;
+    }
+
+    // 勤怠・休憩データ作成共通処理
+    private function actionMain($targetDate, $id, int $csvOutput = 0)
     {
 
         $todayDate = new Carbon($targetDate);
@@ -120,13 +157,13 @@ class StaffListController extends Controller
             $dispAttendanceDatas[] = [
                 'id' => $recordId,
                 'date' => $recordDate,
+                'target_id' => $loginUserId,
+                'user_name' => $recordUserName,
                 'clock_in' => $recordClockIn,
                 'clock_out' => $recordClockOut,
                 'def_attendance' => $recordDiffMin,
                 'def_rest'       => $recordDiffRest,
                 'total_attendance' => $recordDiffTotal,
-                'user_name' => $recordUserName,
-                'target_id' => $loginUserId,
             ];
         }
 
@@ -137,6 +174,10 @@ class StaffListController extends Controller
             'endDay'    => $currentEndOfMonth,
         ];
 
+        // CSV出力ボタン押下時にcsvファイルを作成して返す
+        if ($csvOutput == 1) {
+            return $this::export($navLinkDate, $dispAttendanceDatas);
+        }
         return view('attendance-staff-list', compact('navLinkDate', 'dispAttendanceDatas'));
     }
 
@@ -166,11 +207,20 @@ class StaffListController extends Controller
             $paramMonth = $mode->format('Y-m-01');
         }
 
-        return  $this->actionMain($paramMonth, $paramId);
+        $csvOutPut = 0;
+        if ($request->has('csv_btn')) {
+            $csvOutPut = 1;
+        }
+
+        return  $this->actionMain($paramMonth, $paramId, $csvOutPut);
     }
 
     public function detail(Request $request, int $id)
     {
+        // バリデーション（休憩の項目数は可変）
+
+
+
         if ($request->has('uid')) {
             $attendanceUserName  = User::where('id', $request->uid)->first();
         }
