@@ -86,9 +86,6 @@
 
             </form>
           </td>
-          {{-- <td class="attendance-list__detail">
-            <a href="/admin/attendance/staff/detail/{{ $dayData['id'] }}?tid={{ $tidDate }}&uid={{ $dayData['user_id'] }}">詳細</a>
-          </td> --}}
         </tr>
         @endforeach
       </tbody>
