@@ -15,8 +15,13 @@
       <section class="contents__lists-area">
         <div class="attendance-title">申請一覧</div>
         <div class="request-link">
-            <a href="/stamp_correction_request/list/15"><span>承認待ち</span></a>
-            <a href="/stamp_correction_request/list/11">承認済み</a>
+            @if ($pageId == 15)
+              <a href="/stamp_correction_request/list/15"><span>承認待ち</span></a>
+              <a href="/stamp_correction_request/list/11">承認済み</a>
+            @else
+            <a href="/stamp_correction_request/list/15">承認待ち</a>
+            <a href="/stamp_correction_request/list/11"><span>承認済み</span></a>
+            @endif
         </div>
         <hr />
         <table class="attendance-list">
@@ -33,7 +38,8 @@
           <tbody>
             @foreach ($requestDates as $date)
               @php
-                if ($date['stat'] <> 15 ) {
+                $stat = "承認済み";
+                if ($date['status'] <> 15 ) {
                   $stat = "承認待ち";
                 }
 

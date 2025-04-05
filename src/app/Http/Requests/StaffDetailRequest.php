@@ -2,13 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StaffDetailRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
@@ -17,80 +16,140 @@ class StaffDetailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attendance_clockin'  => 'required',
-            'attendance_clockout' => 'required',
+            'clock_in'  => ['required', 'date'],
+            'clock_out' => ['required', 'date'],
+            'descript' => ['required', 'max:255',],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required'                  => 'お名前を入力してください',
-            'name.max'                       => 'お名前は255文字以内で入力してください',
-            'email.required'                 => 'メールアドレスを入力してください',
-            'email.email'                    => 'メール形式で入力してください',
-            'password.required'              => 'パスワードを入力してください',
-            'password.min'                   => 'パスワードは8文字以上で入力してください',
-            'password.confirmed'             => '確認パスワードと一致しません',
-            'password_confirmation.required' => '確認用パスワードを入力してください',
-            'password_confirmation.min'      => '確認用パスワードは8文字以上で入力してください',
-            'password_confirmation.same'                  => 'パスワードと一致しません',
+            'clock_in.required'  => "勤務開始時間を入力してください",
+            'clock_in.date'      => "勤務開始時間は日付で入力してください",
+            'clock_out.required' => "退勤時間を入力してください",
+            'clock_out.date'     => "勤務開始時間は日付で入力してください",
+            'descript.required'  => '備考を記入してください',
+            'descript.max'       => '備考は255文字以内で入力してください',
         ];
     }
 
     public function attributes()
     {
         return [
-            'name'                  => 'お名前',
-            'email'                 => 'メールアドレス',
-            'password'              => 'パスワード',
-            'password_confirmation' => '確認用パスワード',
+            // 'name'                  => 'お名前',
+            // 'email'                 => 'メールアドレス',
+            // 'password'              => 'パスワード',
+            // 'password_confirmation' => '確認用パスワード',
         ];
     }
 
-    public function varidateModify($input)
+    // 勤怠入力関係のバリデーションルール、エラーメッセージをセット
+    // <戻値>
+    // $param:検証する値を格納した配列(一部値を加工)
+    // $paramRule:検証方法
+    // $paramMsg:エラーメッセージ
+    public function varidateModify(Request $request)
     {
-        $param = [
-            'clock_in'  => $input['dateline'] . ' ' . $input['attendance_clockin'],
-            'clock_out' => $input['dateline'] . ' ' . $input['attendance_clockout'],
-            'descript'  => $input['descript'],
-        ];
-        $paramRule = [];
-        $paramMsg = [];
-        if ($input['rest_clockin'] <> "" || $input['rest_clockout'] <> "") {
-            $param["rest_in"] = $input['dateline'] . ' ' . $input['rest_clockin'];
-            $param["rest_out"] = $input['dateline'] . ' ' . $input['rest_clockout'];
+        $input = [];
+        foreach ($request->all() as $key => $val) {
+            $input[$key] = $val;
+        }
+        $param = $input;
+        $paramRule = $this->rules();
+        $paramMsg = $this->messages();
+        $param['clock_in'] = $input['attendance_clockin'] ? $input['dateline'] . ' ' . $input['attendance_clockin'] : "";
+        $param['clock_out'] = $input['attendance_clockout'] ? $input['dateline'] . ' ' . $input['attendance_clockout'] : "";
 
+        // 出勤と退勤両方入力されている場合のみルールとメッセージを追加
+        if (($param['clock_in'] <> "") && ($param['clock_out'] <> "")) {
             $dateStart = $input['dateline'] . ' ' . $input['attendance_clockin'];
             $dateEnd   = $input['dateline'] . ' ' . $input['attendance_clockout'];
-            $paramRule["rest_in"] = ['required', 'date', "after_or_equal:{$dateStart}"];
-            $paramRule["rest_out"] = ['required', 'date', "before_or_equal:{$dateEnd}"];
+            $paramRule["clock_in"][2]  = "before_or_equal:{$dateEnd}";
+            $paramRule["clock_out"][2] = "after_or_equal:{$dateStart}";
 
-            $paramMsg["rest_in.required"] = "休憩開始時間を入力してください。";
-            $paramMsg["rest_in.date"] = "休憩開始時間は日付を入力してください。";
-            $paramMsg["rest_in.after_or_equal:{$dateStart}"] = "休憩開始時間が勤務開始より前となっています。";
+            $msg = "出勤時間もしくは退勤時間が不適切な値です。";
+            $paramMsg["clock_in.before_or_equal"]  = $msg;
+            $paramMsg["clock_out.after_or_equal"]  = $msg;
+        }
+
+        $dateStart = $input['dateline'] . ' ' . $input['attendance_clockin'];
+        $dateEnd   = $input['dateline'] . ' ' . $input['attendance_clockout'];
+
+        $param['descript']  = $input['descript'];
+
+        if (($input['rest_clockin'] <> "") || ($input['rest_clockout'] <> "")) {
+            $param["rest_in"] = $input['rest_clockin'] ? $input['dateline'] . ' ' . $input['rest_clockin'] : "";
+            $param["rest_out"] = $input['rest_clockout'] ? $input['dateline'] . ' ' . $input['rest_clockout'] : "";
+
+            $paramRule["rest_in"] = ['required', 'date',];
+            $paramRule["rest_out"] = ['required', 'date',];
+            $paramMsg["rest_in.required"]        = "休憩開始時間(hh:mm形式)を入力してください。";
+            $paramMsg["rest_in.date"]            = "休憩開始時間(hh:mm形式)で入力してください。";
+            $paramMsg["rest_out.required"]       = "休憩終了時間(hh:mm形式)を入力してください。";
+            $paramMsg["rest_out.date"]           = "休憩終了時間(hh:mm形式)で入力してください。";
+            $msg = "休憩時間が勤務時間外です。";
+
+            if ($param['clock_in'] <> "") {
+                $paramRule["rest_in"][2] = "after_or_equal:{$dateStart}";
+                $paramRule["rest_out"][2] = "after_or_equal:{$dateStart}";
+                $paramMsg["rest_in.after_or_equal"]  = $msg;
+                $paramMsg["rest_out.after_or_equal"]  = $msg;
+            }
+            if ($param['clock_out'] <> "") {
+                $paramRule["rest_in"][3] = "before_or_equal:{$dateEnd}";
+                $paramRule["rest_out"][3] = "before_or_equal:{$dateEnd}";
+                $paramMsg["rest_in.before_or_equal"]  = $msg;
+                $paramMsg["rest_out.before_or_equal"]  = $msg;
+            }
         }
         if ((int)$input['restSectMax'] > 0) {
             for ($index = 1; $index <= (int)$input['restSectMax']; $index++) {
-                if ($input["rest_clockin{$index}"] <> "" || $input["rest_clockout{$index}"] <> "") {
-                    $param["rest_in{$index}"] = $input['dateline'] . ' ' . $input["rest_clockin{$index}"];
-                    $param["rest_out{$index}"] = $input['dateline'] . ' ' . $input["rest_clockout{$index}"];
+                if (($input["rest_clockin{$index}"] <> "") || ($input["rest_clockout{$index}"] <> "")) {
+                    $param["rest_in{$index}"] = $input["rest_clockin{$index}"] ? $input['dateline'] . ' ' . $input["rest_clockin{$index}"] : "";
+                    $param["rest_out{$index}"] = $input["rest_clockout{$index}"] ? $input['dateline'] . ' ' . $input["rest_clockout{$index}"] : "";
 
-                    if ($index == 1) {
-                        $dateStart = $param["rest_out"];
-                        $dateEnd   = $input['dateline'] . ' ' . $input['attendance_clockout'];
-                    } else {
-                        $newIndex = $index - 1;
-                        $dateStart = $param["rest_out{$newIndex}"];
-                        $dateEnd   = $input['dateline'] . ' ' . $input['attendance_clockout'];
+                    $paramRule["rest_in{$index}"] = ['required', 'date',];
+                    $paramRule["rest_out{$index}"] = ['required', 'date',];
+                    $paramMsg["rest_in{$index}.required"]        = "休憩開始時間(hh:mm形式)を入力してください。";
+                    $paramMsg["rest_in{$index}.date"]            = "休憩開始時間(hh:mm形式)で入力してください。";
+                    $paramMsg["rest_out{$index}.required"]       = "休憩終了時間(hh:mm形式)を入力してください。";
+                    $paramMsg["rest_out{$index}.date"]           = "休憩終了時間(hh:mm形式)で入力してください。";
+                    $msg = "休憩時間が勤務時間外です。";
+
+                    if ($param['clock_in'] <> "") {
+                        $paramRule["rest_in{$index}"][2] = "after_or_equal:{$dateStart}";
+                        $paramRule["rest_out{$index}"][2] = "after_or_equal:{$dateStart}";
+                        $paramMsg["rest_in{$index}.after_or_equal"]  = $msg;
+                        $paramMsg["rest_out{$index}.after_or_equal"]  = $msg;
                     }
-                    $paramRule["rest_in{$index}"] = ['required', 'date', "after_or_equal:{$dateStart}"];
-                    $paramRule["rest_out{$index}"] = ['required', 'date', "before_or_equal:{$dateEnd}"];
+                    if ($param['clock_out'] <> "") {
+                        $paramRule["rest_in{$index}"][3] = "before_or_equal:{$dateEnd}";
+                        $paramRule["rest_out{$index}"][3] = "before_or_equal:{$dateEnd}";
+                        $paramMsg["rest_in{$index}.before_or_equal"]  = $msg;
+                        $paramMsg["rest_out{$index}.before_or_equal"]  = $msg;
+                    }
                 }
             }
         }
-        $arrayRule = [];
-        $arrayRule = $this->rules();
-        dd($arrayRule);
+        return [$param, $paramRule, $paramMsg];
+    }
+
+    // 入力のチェック済みが前提
+    public function varidateRestRelation(Request $request)
+    {
+        $input = [];
+        foreach ($request->all() as $key => $val) {
+            $input[$key] = $val;
+        }
+        $param = $input;
+
+        // 休憩データがある場合は、昇順で並べ替え
+        // $paramMsg["rest_in.required"]        = "休憩開始時間(hh:mm形式)を入力してください。";
+        // $paramMsg["rest_in.date"]            = "休憩開始時間(hh:mm形式)で入力してください。";
+        // $paramMsg["rest_in.after_or_equal"]  = "休憩開始時間が勤務開始時刻{$dateStart}より前となっています。";
+        // $paramMsg["rest_out.required"]       = "休憩終了時間(hh:mm形式)を入力してください。";
+        // $paramMsg["rest_out.date"]           = "休憩終了時間(hh:mm形式)で入力してください。";
+        // $paramMsg["rest_out.before_or_equal"] = "休憩終了時間が退勤時刻{$dateEnd}より後となっています。";
     }
 }

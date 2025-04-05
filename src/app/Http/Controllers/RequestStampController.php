@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StaffDetailRequest;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
@@ -10,24 +10,22 @@ use App\Models\Rest;
 use App\Models\Request_Attendance;
 use App\Models\Request_Rest;
 use App\Models\User;
+use App\Http\Requests\StaffDetailRequest;
 
 class RequestStampController extends Controller
 {
-
     // adminかwebかで処理を分岐
     private function actionMain($pageId)
     {
         if (Auth::guard('admin')->check()) {
-
             if ($pageId == 15) {
                 $requestDates = Request_Attendance::where('status', '<>', $pageId)->orderBy('clock_in')->get();
             } else {
                 $requestDates = Request_Attendance::where('status', 15)->orderBy('clock_in')->get();
             }
             $requestName  = User::all();
-            return view('request-admin-list', compact('requestDates', 'requestName'));
+            return view('request-admin-list', compact('requestDates', 'requestName', 'pageId'));
         } else {
-
             if ($pageId == 15) {
                 $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', '<>', $pageId)->orderBy('clock_in')->get();
             } else {
@@ -76,7 +74,6 @@ class RequestStampController extends Controller
                 'status'    => $reqStat,
                 'gardFlg'   => 1,  // adminであることを示す
             ];
-
             return view('attendance-admin-detail', compact('dispDetailDates', 'attendanceRestDates'));
         } else {
             $attendanceUserName    = User::where('id', Auth::user()->id)->first();
@@ -107,8 +104,17 @@ class RequestStampController extends Controller
 
     public function modify(Request $request, int $id)
     {
-        // バリデーション
-        StaffDetailRequest::varidateModify($request);
+        // 空欄かどうか、入力された時刻が不適切かをチェック
+        $requestVaridateInstance = new StaffDetailRequest;
+        [$inputData, $roles, $messages] = $requestVaridateInstance->varidateModify($request);
+        // dd([$inputData, $roles, $messages]);
+        Validator::make($inputData, $roles, $messages)->validate();
+        // dd([$inputData, $roles, $messages]);
+
+        // 休憩同士の関係をチェック
+        // [$inputData, $roles, $messages] = $requestVaridateInstance->varidateRestRelation($request);
+        // dd([$inputData, $roles, $messages]);
+        // Validator::make($inputData, $roles, $messages)->validate();
 
         if ($id <> 0) {
             $attendId = $id;
@@ -125,7 +131,7 @@ class RequestStampController extends Controller
             'name'          => $request->name,
             'clock_in'      => $request->attendance_clockin,
             'clock_out'     => $request->attendance_clockout,
-            'descript'      => $request['discript'],
+            'descript'      => $request['descript'],
             'status'        => $request->status,
         ];
         $maxCount = $request->restSectMax;
@@ -150,7 +156,7 @@ class RequestStampController extends Controller
         if ($maxCount > 0) {
             for ($counter = 1; $counter <= $maxCount; $counter++) {
                 $tmpNewRestData = [];
-                if ($request['rest_clockin' . $counter] <> "" or $request['rest_clockout' . $counter] <> "") {
+                if ($request['rest_clockin' . $counter] <> "" || $request['rest_clockout' . $counter] <> "") {
 
                     if ($request['rest_id' . $counter] <> 0) {
                         $restId = $request['rest_id' . $counter];
@@ -225,10 +231,10 @@ class RequestStampController extends Controller
         $attendanceInstance->status        = $dispDetailDatesMain[0]['status'];
         $attendanceInstance->save();
 
-        // 該当する勤怠データのステータスを変更
+        // 該当する勤怠データのステータスを申請中に変更
         Attendance::where('id', $dispDetailDatesMain[0]['attendance_id'])->update(['status' => $dispDetailDatesMain[0]['status']]);
 
-        // 休憩関連のデータを保存
+        // 休憩関連の申請データを保存
         if (!empty($attendanceRestDatesMain)) {
             $params   = [];
             $restDate = [];
@@ -250,20 +256,19 @@ class RequestStampController extends Controller
 
     public function approve(Request $request, $attendance_correct_request)
     {
-
         // 修正ボタン押下時
         if ($request->has('admin_btn_mod')) {
             return $this->modify($request, $attendance_correct_request);
         }
 
-        // // 該当勤怠データを更新
+        // 該当勤怠データを更新
         $queryReqAttendance = Request_Attendance::where('id', $attendance_correct_request);
         $requestDate = $queryReqAttendance->first();
 
         if (!empty($requestDate)) {
-
             $queryAttendance = Attendance::where('id', $requestDate['attendance_id']);
             $paramsAttenndance = [
+                'descript'  => $request['descript'],
                 'clock_in'  => $request['dateline'] . ' ' . $request['attendance_clockin'],
                 'clock_out' => $request['dateline'] . ' ' . $request['attendance_clockout'],
                 'status'    => 2,
