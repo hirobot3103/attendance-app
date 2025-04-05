@@ -40,7 +40,8 @@
 
             @foreach ($requestDates as $date)
               @php
-                if ($date['stat'] <> 15 ) {
+                $stat = "承認済み";
+                if ($date['status'] <> 15 ) {
                   $stat = "承認待ち";
                 }
 
