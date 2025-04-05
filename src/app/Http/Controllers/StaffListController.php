@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -99,7 +98,6 @@ class StaffListController extends Controller
     // 勤怠・休憩データ作成共通処理
     private function actionMain($targetDate, $id, int $csvOutput = 0)
     {
-
         $todayDate = new Carbon($targetDate);
         $monthDate = $todayDate->copy();
 
@@ -218,11 +216,14 @@ class StaffListController extends Controller
     public function detail(Request $request, int $id)
     {
         // バリデーション（休憩の項目数は可変）
-
-
-
         if ($request->has('uid')) {
             $attendanceUserName  = User::where('id', $request->uid)->first();
+        } elseif ($request->has('user_id')) {
+            $attendanceUserName  = User::where('id', $request->user_id)->first();
+        } else {
+            $dispDetailDates[] = [];
+            $attendanceRestDates = [];
+            return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
         }
 
         if ($id <> 0) {

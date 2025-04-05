@@ -91,7 +91,7 @@ Route::middleware(['admin.guard'])->group(function () {
     Route::get('/admin/staff/list', [StaffListController::class, 'index'])->name('admin.stafflist');
     Route::get('/admin/attendance/staff/{id}', [StaffListController::class, 'list'])->name('admin.staffattend');
     Route::post('/admin/attendance/staff/{id}', [StaffListController::class, 'search'])->name('admin.staffserach');
-    Route::post('/admin/attendance/staff/detail/{id}', [StaffListController::class, 'detail'])->name('admin.staffdetail');
+    Route::match(['get', 'post'], '/admin/attendance/staff/detail/{id}', [StaffListController::class, 'detail'])->name('admin.staffdetail');
 });
 
 // 管理者のログアウト

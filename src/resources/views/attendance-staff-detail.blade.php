@@ -1,3 +1,34 @@
+@php
+  if ($errors->any()) {
+    // dd($errors);
+    $dispDetailDates[0]['id'] = old('id');
+    $dispDetailDates[0]['target_id'] = old('user_id');   
+    $dispDetailDates[0]['dateline'] = old('dateline');   
+    $dispDetailDates[0]['name'] = old('name');
+    $dispDetailDates[0]['clock_in'] = old('attendance_clockin');
+    $dispDetailDates[0]['clock_out'] = old('attendance_clockout');
+    $dispDetailDates[0]['descript'] = old('descript');
+    $dispDetailDates[0]['status'] = old('status');
+    $dispDetailDates[0]['gardFlg'] = 1;
+
+      $attendanceRestDates[] = [
+        'rest_id'      => old('rest_id')?old('rest_id'):"",
+        'rest_in'      => old('rest_clockin')?old('rest_clockin'):"",
+        'rest_out'     => old('rest_clockout')?old('rest_clockout'):"",
+      ];
+      if (old('restSectMax')  > 0 ) {
+        for ($index = 1; $index <= old('restSectMax'); $index++) {
+          $attendanceRestDates[] = [
+            "rest_id" => old("rest_id{$index}"),
+            "rest_in" => old("rest_clockin{$index}"),
+            "rest_out" => old("rest_clockout{$index}"),
+          ];      
+        }
+      }
+    // dd($attendanceRestDates);
+  }
+@endphp
+
 @extends('layouts.app')
 
 @section('subtitle','勤怠詳細画面')
@@ -22,6 +53,7 @@
   $sectionNumber = 0;
 @endphp
   <main class="contents">
+    {{-- {{ dd($dispDetailDates[0]) }} --}}
     <section class="contents__lists-area">
       <div class="attendance-title">勤怠詳細</div>
       <div class="attendance-list">
@@ -59,9 +91,14 @@
             />
           </div>
         </div>
-
+        @error('clock_in')
+        {{ $message }}
+      @enderror
+        @error('clock_out')
+          {{ $message }}
+        @enderror
         @php
-          $flg =0;
+          $flg = 0;
         @endphp
         @foreach ( $attendanceRestDates as $restdate )
           @php
@@ -69,13 +106,14 @@
 
             $restStartTime = $restdate['rest_in']  <> "" ? date('H:i', strtotime($restdate['rest_in']))  : "";
             $restEndTime   = $restdate['rest_out'] <> "" ? date('H:i', strtotime($restdate['rest_out'])) : "";
-
             if ($sectionNumber == 0) {
               $sectNo = "";
             } else {
               $sectNo = $sectionNumber;
             }
-
+            if(empty($restdate['id'])){
+              $restdate['id'] = "";
+            }
           @endphp
           <div class="rest-section">
             <div class="section__index">休憩{{ $sectNo }}</div>
@@ -101,12 +139,23 @@
                 form="detail-form"
               />
             </div>
+            @error("rest_in{$sectNo}")
+            {{ $message }}
+          @enderror
+          @error("rest_out{$sectNo}")
+            {{ $message }}
+          @enderror
+
           </div>
-        @php
-          $sectionNumber++;
-        @endphp
+          @php
+            $sectionNumber++;
+          @endphp
         @endforeach
-        @if (($sectionNumber <> 0) or ($flg == 0))
+        @if (old("restSectMax") > 0)
+          @php
+            $sectionNumber -= 1;
+          @endphp
+        @elseif (($sectionNumber <> 0) or ($flg == 0))
           @php
             if ($flg == 0){
               $sectionNumber = "";
@@ -139,25 +188,34 @@
           </div>
         @endif
 
-        <div class="discript-section">
+        <div class="descript-section">
           <div class="section__index">備考</div>
-          <div class="discript-section__content">
-            <textarea name="discript" id="discript" form="detail-form">{{ $dispDetailDates[0]['descript'] }}</textarea>
+          <div class="descript-section__content">
+            <textarea name="descript" id="descript" form="detail-form">{{ $dispDetailDates[0]['descript'] }}</textarea>
           </div>
+          @error('descript')
+            {{ $message }}
+          @enderror
         </div>
       </div>
-
       @if ( $dispDetailDates[0]['status'] >=11 && $dispDetailDates[0]['status'] <=13 )
         <p class="request-stat">*承認待ちのため修正はできません。</p>
       @else
         <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
           @csrf
           <button type="submit" class="form-btn" name="admin_btn_mod">修  正</button>
+          <input type="hidden" value="{{ $dispDetailDates[0]['id'] }}" name="id">
           <input type="hidden" value="{{ $dispDetailDates[0]['target_id'] }}" name="user_id">
           <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
           <input type="hidden" value="{{ $dispDetailDates[0]['dateline'] }}" name="dateline">
           <input type="hidden" value="{{ $dispDetailDates[0]['status'] }}" name="status">
-          <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
+          @if (old("restSectMax") <> "")
+            <input type="hidden" value="{{ old("restSectMax") }}" name="restSectMax">
+          @else
+            <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
+          @endif
+          <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
+
         </form>
       @endif
     </section>

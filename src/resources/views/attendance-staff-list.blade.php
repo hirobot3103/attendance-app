@@ -92,10 +92,7 @@
           @endif
         </tbody>
       </table>
-      {{-- <form class="csv-form" id="csv_header" name="csv_form" action="/admin/attendance/staff/{{ $dispAttendanceDatas[0]['target_id'] }}" method="POST">
-        @csrf --}}
         <button type="submit" class="form-btn" name="csv_btn" form="nav_header">CSV出力</button>
-      {{-- </form>   --}}
     </section>
   </main>
   <script>

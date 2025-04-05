@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('subtitle','勤怠詳細画面')
+@section('subtitle','勤怠詳細画面(管理画面)')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
@@ -135,10 +135,10 @@
           </div>
         @endif
 
-        <div class="discript-section">
+        <div class="descript-section">
           <div class="section__index">備考</div>
-          <div class="discript-section__content">
-            <textarea name="discript" id="discript" form="detail-form">{{ $dispDetailDates[0]['descript'] }}</textarea>
+          <div class="descript-section__content">
+            <textarea name="descript" id="descript" form="detail-form">{{ $dispDetailDates[0]['descript'] }}</textarea>
           </div>
         </div>
       </div>
