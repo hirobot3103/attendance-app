@@ -128,6 +128,11 @@ body {
     border-bottom: 0.3vw solid #F0EFF2;
 }
 
+.request-descript {
+    padding-left: 5%;
+    text-align: left;
+}
+
 .attendance-list__detail {
     color: #000;
 }

@@ -35,7 +35,24 @@ class AttendancesTableSeeder extends Seeder
         $twoMonthAgoEndOfMonth = $twoMonthAgoDate->daysInMonth;
 
         $params = [];
-        $stats = [2, 2, 2, 2, 12, 2, 2, 12, 2, 2, 2, 2, 2, 13, 2, 2, 2, 2, 12, 12, 2];
+        $stats = [2, 2, 2, 2, 12, 2, 2, 12, 2, 15, 2, 2, 2, 2, 2, 2, 12, 2, 2, 2, 2, 12, 12, 15];
+        $descripts = [
+            "早退：保育園へ迎えに行くため",
+            "早退：体調不良のため",
+            "早退：",
+            "早退：保育園へ迎えに行くため",
+            "早退：保育園へ迎えに行くため",
+            "早退：保育園へ迎えに行くため",
+            "遅刻：電車事故による遅延",
+            "遅刻：電車事故による遅延",
+            "遅刻：電車事故による遅延",
+            "遅刻：電車事故による遅延",
+            "遅刻：電車事故による遅延",
+            "遅刻：電車事故による遅延",
+            "その他：打刻操作ミス",
+            "その他：休憩時間の打刻忘れ",
+            "その他：勤怠管理アプリの不具合のため",
+        ];
 
         // 各月 土日を除く1日～月末日までId毎に作成
         for ($nowId = 1; $nowId <= $maxId; $nowId++) {
@@ -49,6 +66,13 @@ class AttendancesTableSeeder extends Seeder
                 $endtime   = $strDate . ' ' . '17:00:00';
                 $randId = rand(0, count($stats) - 1);
                 $datastatus = $stats[$randId];
+                $descript = "";
+
+                // ステータスが承認済みの場合、申請理由を作成
+                if ($datastatus == 15) {
+                    $randId = rand(0, count($descripts) - 1);
+                    $descript = $descripts[$randId];
+                }
 
                 // 土日でなければデータを作成
                 if (($paramDay->isSaturday() == false) and ($paramDay->isSunday() == false)) {
@@ -59,6 +83,9 @@ class AttendancesTableSeeder extends Seeder
                         'clock_out' => $endtime,
                         'status'    => $datastatus,
                     ];
+                    if ($descript <> "") {
+                        $params['descript'] = $descript;
+                    }
                 }
             }
             // DBへ登録
@@ -74,6 +101,13 @@ class AttendancesTableSeeder extends Seeder
                 $endtime   = $strDate . ' ' . '17:00:00';
                 $randId = rand(0, count($stats) - 1);
                 $datastatus = $stats[$randId];
+                $descript = "";
+
+                // ステータスが承認済みの場合、申請理由を作成
+                if ($datastatus == 15) {
+                    $randId = rand(0, count($descripts) - 1);
+                    $descript = $descripts[$randId];
+                }
 
                 // 土日でなければデータを作成
                 if (($paramDay->isSaturday() == false) and ($paramDay->isSunday() == false)) {
@@ -84,6 +118,9 @@ class AttendancesTableSeeder extends Seeder
                         'clock_out' => $endtime,
                         'status'    => $datastatus,
                     ];
+                    if ($descript <> "") {
+                        $params['descript'] = $descript;
+                    }
                 }
             }
             // DBへ登録
@@ -99,6 +136,13 @@ class AttendancesTableSeeder extends Seeder
                 $endtime   = $strDate . ' ' . '17:00:00';
                 $randId = rand(0, count($stats) - 1);
                 $datastatus = $stats[$randId];
+                $descript = "";
+
+                // ステータスが承認済みの場合、申請理由を作成
+                if ($datastatus == 15) {
+                    $randId = rand(0, count($descripts) - 1);
+                    $descript = $descripts[$randId];
+                }
 
                 // 土日でなければデータを作成
                 if (($paramDay->isSaturday() == false) and ($paramDay->isSunday() == false)) {
@@ -109,6 +153,9 @@ class AttendancesTableSeeder extends Seeder
                         'clock_out' => $endtime,
                         'status'    => $datastatus,
                     ];
+                    if ($descript <> "") {
+                        $params['descript'] = $descript;
+                    }
                 }
             }
             DB::table('attendances')->insert($params);

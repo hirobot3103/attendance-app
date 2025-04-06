@@ -1,6 +1,6 @@
+{{-- 管理者用詳細・修正ページ --}}
 @php
   if ($errors->any()) {
-    // dd($errors);
     $dispDetailDates[0]['id'] = old('id');
     $dispDetailDates[0]['target_id'] = old('user_id');   
     $dispDetailDates[0]['dateline'] = old('dateline');   
@@ -9,7 +9,7 @@
     $dispDetailDates[0]['clock_out'] = old('attendance_clockout');
     $dispDetailDates[0]['descript'] = old('descript');
     $dispDetailDates[0]['status'] = old('status');
-    $dispDetailDates[0]['gardFlg'] = 1;
+    $dispDetailDates[0]['gardFlg'] = old('gardFlg');
 
       $attendanceRestDates[] = [
         'rest_id'      => old('rest_id')?old('rest_id'):"",
@@ -25,35 +25,37 @@
           ];      
         }
       }
-    // dd($attendanceRestDates);
   }
+  $subTitle = "";
+    if ($dispDetailDates[0]['gardFlg'] == 1) {
+      $subTitle = "(管理者用ページ)";
+    }
 @endphp
 
 @extends('layouts.app')
 
-@section('subtitle','勤怠詳細画面')
+@section('subtitle',"勤怠詳細画面{$subTitle}")
 
 @section('css')
-    @if ($dispDetailDates[0]['gardFlg'] == 1)
-      <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
-    @else
-      <link rel="stylesheet" href="{{ asset('assets/css/attendance-detail.css') }}" />
-    @endif
+  <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
 @endsection
 
 @section('header-contents')
-  <x-header-auth></x-header-auth>
+  @if($dispDetailDates[0]['gardFlg'] == 1)
+    <x-header-auth></x-header-auth>
+  @else
+    <x-header-user></x-header-user>
+  @endif
 @endsection  
 
 @section('main-contents')
-@php
-  $dateStrings =preg_split('/[-]/', $dispDetailDates[0]['dateline'] );
-  $startTime = $dispDetailDates[0]['clock_in'] <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_in'])) : "";
-  $endTime = $dispDetailDates[0]['clock_out']  <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_out'])) : "";
-  $sectionNumber = 0;
-@endphp
+  @php
+    $dateStrings =preg_split('/[-]/', $dispDetailDates[0]['dateline'] );
+    $startTime = $dispDetailDates[0]['clock_in'] <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_in'])) : "";
+    $endTime = $dispDetailDates[0]['clock_out']  <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_out'])) : "";
+    $sectionNumber = 0;
+  @endphp
   <main class="contents">
-    {{-- {{ dd($dispDetailDates[0]) }} --}}
     <section class="contents__lists-area">
       <div class="attendance-title">勤怠詳細</div>
       <div class="attendance-list">
@@ -151,11 +153,20 @@
             $sectionNumber++;
           @endphp
         @endforeach
-        @if (old("restSectMax") > 0)
+
+        @if ( old("restSectMax") > 0 )
           @php
-            $sectionNumber -= 1;
+            $sectionNumber = old("restSectMax") - 1;
           @endphp
-        @elseif (($sectionNumber <> 0) or ($flg == 0))
+        @elseif ( old("restSectMax") == 0 )
+          @php
+            $sectionNumber = old("restSectMax");
+          @endphp
+        @endif
+
+        @if (( old("restSectMax") == "" ) && ($flg <> 0))
+
+        @else
           @php
             if ($flg == 0){
               $sectionNumber = "";
@@ -187,7 +198,6 @@
             </div>
           </div>
         @endif
-
         <div class="descript-section">
           <div class="section__index">備考</div>
           <div class="descript-section__content">
@@ -215,7 +225,6 @@
             <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
           @endif
           <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
-
         </form>
       @endif
     </section>

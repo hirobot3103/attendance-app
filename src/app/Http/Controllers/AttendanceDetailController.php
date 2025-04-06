@@ -55,6 +55,7 @@ class AttendanceDetailController extends Controller
 
         $dispDetailDates[] = [
             'id' => $reqId,
+            'user_id' => $reqUserId,
             'target_id' => $reqUserId,
             'dateline' => $reqDate,
             'name' => $reqName,
@@ -62,7 +63,7 @@ class AttendanceDetailController extends Controller
             'clock_out' => $reqClockOut,
             'descript'  => $reqDescript,
             'status'    => $reqStat,
-            'gardFlg'   => 1,
+            'gardFlg'   => 0,
         ];
         return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
     }
