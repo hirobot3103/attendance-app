@@ -1,6 +1,7 @@
+{{-- 管理者用申請一覧 --}}
 @extends('layouts.app')
 
-@section('subtitle','申請一覧画面')
+@section('subtitle','申請一覧画面(管理者用ページ)')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/admin-request-list.css') }}" />
@@ -59,7 +60,14 @@
                 <td>{{ $stat }}</td>
                 <td>{{ $name }}</td>
                 <td>{{ $clockin }}</td>
-                <td>{{ $descript }}</td>
+                @php
+                  if(strlen($descript) >= 24) {
+                    $shortDescript = substr($descript, 0, 24) . ' ...';                  
+                  } else {
+                    $shortDescript = $descript;
+                  }
+                @endphp
+                <td class="request-descript">{{ $shortDescript }}</td>
                 <td>{{ $reqDate }}</td>
                 <td class="attendance-list__detail"><a href="/stamp_correction_request/{{ $date['id'] }}">詳細</a></td>
               </tr>

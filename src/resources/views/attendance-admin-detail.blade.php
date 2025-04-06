@@ -1,3 +1,4 @@
+{{-- 管理者用ページ：承認直前の勤怠詳細 --}}
 @extends('layouts.app')
 
 @section('subtitle','勤怠詳細画面(管理者ページ)')
@@ -11,12 +12,12 @@
 @endsection  
 
 @section('main-contents')
-@php
-  $dateStrings =preg_split('/[-]/', $dispDetailDates[0]['dateline'] );
-  $startTime = $dispDetailDates[0]['clock_in'] <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_in'])) : "";
-  $endTime = $dispDetailDates[0]['clock_out']  <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_out'])) : "";
-  $sectionNumber = 0;
-@endphp
+  @php
+    $dateStrings =preg_split('/[-]/', $dispDetailDates[0]['dateline'] );
+    $startTime = $dispDetailDates[0]['clock_in'] <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_in'])) : "";
+    $endTime = $dispDetailDates[0]['clock_out']  <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_out'])) : "";
+    $sectionNumber = 0;
+  @endphp
   <main class="contents">
     <section class="contents__lists-area">
       <div class="attendance-title">勤怠詳細</div>
@@ -41,6 +42,7 @@
               id="attendance_clockin"
               value="{{ $startTime }}"
               form="detail-form"
+              readonly
             />
           </div>
           <div class="att-section__space"><span>～</span></div>
@@ -52,6 +54,7 @@
               id="attendance_clockout"
               value="{{ $endTime }}"
               form="detail-form"
+              readonly
             />
           </div>
         </div>
@@ -84,6 +87,7 @@
                 id="rest_clockin{{ $sectNo }}"
                 value="{{ $restStartTime }}"
                 form="detail-form"
+                readonly
               />
             </div>
             <div class="rest-section__space"><span>～</span></div>
@@ -95,6 +99,7 @@
                 id="rest_clockout{{ $sectNo }}"
                 value="{{ $restEndTime }}"
                 form="detail-form"
+                readonly
               />
             </div>
           </div>
@@ -119,6 +124,7 @@
                 id="rest_clockin{{ $sectionNumber }}"
                 value=""
                 form="detail-form"
+                readonly
               />
             </div>
             <div class="rest-section__space"><span>～</span></div>
@@ -130,6 +136,7 @@
                 id="rest_clockout{{ $sectionNumber }}"
                 value=""
                 form="detail-form"
+                readonly
               />
             </div>
           </div>
@@ -138,23 +145,24 @@
         <div class="descript-section">
           <div class="section__index">備考</div>
           <div class="descript-section__content">
-            <textarea name="descript" id="descript" form="detail-form">{{ $dispDetailDates[0]['descript'] }}</textarea>
+            <textarea name="descript" id="descript" form="detail-form" readonly>{{ $dispDetailDates[0]['descript'] }}</textarea>
           </div>
         </div>
       </div>
-
-      @if ( $dispDetailDates[0]['status'] == 15 )
-        <p class="request-stat">*この申請は承認されているため、修正はできません。</p>
-      @else
-        <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
-          @csrf
-          <button type="submit" class="form-btn">承　認</button>
-          <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
-          <input type="hidden" value="{{ $dispDetailDates[0]['dateline'] }}" name="dateline">
-          <input type="hidden" value="{{ $dispDetailDates[0]['status'] }}" name="status">
-          <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
-        </form>
-      @endif
+      <section class="approve_btn">
+        @if ( $dispDetailDates[0]['status'] == 15 )
+          <p class="request-stat">承認済み</p>
+        @else
+          <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
+            @csrf
+            <button type="submit" class="form-btn">承　認</button>
+            <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
+            <input type="hidden" value="{{ $dispDetailDates[0]['dateline'] }}" name="dateline">
+            <input type="hidden" value="{{ $dispDetailDates[0]['status'] }}" name="status">
+            <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
+          </form>
+        @endif
+      </section>
     </section>
   </main>
 @endsection

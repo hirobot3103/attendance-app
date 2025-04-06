@@ -1,3 +1,4 @@
+{{-- 申請一覧（一般ユーザー用） --}}
 @extends('layouts.app')
 
 @section('subtitle','申請一覧画面')
@@ -15,9 +16,14 @@
       <section class="contents__lists-area">
         <div class="attendance-title">申請一覧</div>
         <div class="request-link">
+          @if ($pageId == 15)
             <a href="/stamp_correction_request/list/15"><span>承認待ち</span></a>
             <a href="/stamp_correction_request/list/11">承認済み</a>
-        </div>
+          @else
+          <a href="/stamp_correction_request/list/15">承認待ち</a>
+          <a href="/stamp_correction_request/list/11"><span>承認済み</span></a>
+          @endif
+      </div>
         <hr />
         <table class="attendance-list">
           <thead>
@@ -54,7 +60,15 @@
                 <td>{{ $stat }}</td>
                 <td>{{ $name }}</td>
                 <td>{{ $clockin }}</td>
-                <td>{{ $descript }}</td>
+                @php
+                  if(strlen($descript) >= 24) {
+                    $shortDescript = substr($descript, 0, 24) . ' ...';                  
+                  } else {
+                    $shortDescript = $descript;
+                  }
+                @endphp
+                <td class="request-descript">{{ $shortDescript }}</td>
+                <td>{{ $reqDate }}</td>
                 <td>{{ $reqDate }}</td>
                 <td class="attendance-list__detail"><a href="/stamp_correction_request/{{ $date['id'] }}">詳細</a></td>
               </tr>
