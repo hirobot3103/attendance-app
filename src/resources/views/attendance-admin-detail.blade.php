@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('subtitle','勤怠詳細画面(管理画面)')
+@section('subtitle','勤怠詳細画面(管理者ページ)')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
@@ -57,7 +57,7 @@
         </div>
 
         @php
-          $flg =0;
+          $flg = 0;
         @endphp
         @foreach ( $attendanceRestDates as $restdate )
           @php
@@ -98,9 +98,9 @@
               />
             </div>
           </div>
-        @php
-          $sectionNumber++;
-        @endphp
+          @php
+            $sectionNumber++;
+          @endphp
         @endforeach
         @if (($sectionNumber <> 0) or ($flg == 0))
           @php
