@@ -32,7 +32,7 @@ class RequestStampController extends Controller
                 $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', 15)->orderBy('clock_in')->get();
             }
             $requestName  = User::where('id', Auth::user()->id)->first();
-            return view('request-user-list', compact('requestDates', 'requestName'));
+            return view('request-user-list', compact('requestDates', 'requestName', 'pageId'));
         }
     }
 
@@ -98,7 +98,8 @@ class RequestStampController extends Controller
                 'status'    => $reqStat,
                 'gardFlg'   => 0,
             ];
-            return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
+            // return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
+            return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
         }
     }
 
@@ -107,9 +108,7 @@ class RequestStampController extends Controller
         // 空欄かどうか、入力された時刻が不適切かをチェック
         $requestVaridateInstance = new StaffDetailRequest;
         [$inputData, $roles, $messages] = $requestVaridateInstance->varidateModify($request);
-        // dd([$inputData, $roles, $messages]);
         Validator::make($inputData, $roles, $messages)->validate();
-        // dd([$inputData, $roles, $messages]);
 
         // 休憩同士の関係をチェック
         // [$inputData, $roles, $messages] = $requestVaridateInstance->varidateRestRelation($request);
