@@ -114,7 +114,10 @@ class StaffListController extends Controller
         $userAttendanceDatas = $query->orderBy('clock_in', 'asc')->get();
         $userRestDates = $query->with('rests')->get();
 
+        // 勤怠データ作成
         $dispAttendanceDatas = [];
+
+        // 日付部分
         $titleDate = [];
         $titleBaseDate = new Carbon($dateStart);
         for ($loop = 1; $loop <= $currentEndOfMonth; $loop++) {
@@ -165,6 +168,7 @@ class StaffListController extends Controller
             ];
         }
 
+        // 表示のための年月日、月末データ
         $navLinkDate = [
             'baseMonth' => $monthDate->format('Y-m'),
             'year'      => $currentYear,
@@ -215,12 +219,15 @@ class StaffListController extends Controller
 
     public function detail(Request $request, int $id)
     {
-        // バリデーション（休憩の項目数は可変）
+        // バリデーション（休憩の項目数は可変)
+
         if ($request->has('uid')) {
             $attendanceUserName  = User::where('id', $request->uid)->first();
         } elseif ($request->has('user_id')) {
             $attendanceUserName  = User::where('id', $request->user_id)->first();
         } else {
+
+            // バリデーションでエラーがあった後、GETで呼び出される
             $dispDetailDates[] = [];
             $attendanceRestDates = [];
             return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
