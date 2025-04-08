@@ -98,7 +98,6 @@ class RequestStampController extends Controller
                 'status'    => $reqStat,
                 'gardFlg'   => 0,
             ];
-            // return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
             return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
         }
     }
@@ -180,24 +179,27 @@ class RequestStampController extends Controller
         $dispDetailDatesMain = [];
         foreach ($dispDetailDates as $date) {
 
+            $date['status'] = 12;
+
             if ($date['clock_in'] <> "") {
-                $date['status'] = 11;
+                // $date['status'] = 11;
                 $date['clock_in'] = $date['dateline'] . " " . $date['clock_in'];
             }
             if ($date['clock_out'] <> "") {
-                $date['status'] = 12;
+                // $date['status'] = 12;
                 $date['clock_out'] = $date['dateline'] . " " . $date['clock_out'];
             }
 
             if (!empty($attendanceRestDates)) {
                 foreach ($attendanceRestDates as $restDate) {
+                    $date['status'] = 12;
 
                     if ($restDate['rest_in'] <> "") {
-                        $date['status'] = $date['status'] == 12 ? 12 : 13;
+                        // $date['status'] = $date['status'] == 12 ? 12 : 13;
                         $restDate['rest_in'] = $date['dateline'] . " " . $restDate['rest_in'];
                     }
                     if ($restDate['rest_out'] <> "") {
-                        $date['status'] = $date['status'] == 13 ? 12 : 11;
+                        // $date['status'] = $date['status'] == 13 ? 12 : 11;
                         $restDate['rest_out'] = $date['dateline'] . " " . $restDate['rest_out'];
                     }
 
@@ -263,7 +265,6 @@ class RequestStampController extends Controller
         // 該当勤怠データを更新
         $queryReqAttendance = Request_Attendance::where('id', $attendance_correct_request);
         $requestDate = $queryReqAttendance->first();
-
         if (!empty($requestDate)) {
             $queryAttendance = Attendance::where('id', $requestDate['attendance_id']);
             $paramsAttenndance = [
