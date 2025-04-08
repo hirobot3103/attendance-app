@@ -54,6 +54,16 @@
               form="detail-form"
             />
           </div>
+          @if ($errors->has('attendance_clockin'))
+            @foreach($errors->get('attendance_clockin') as $errorMassage )
+                <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+            @endforeach
+          @endif
+          @if ($errors->has('attendance_clockout'))
+            @foreach($errors->get('attendance_clockout') as $errorMassage )
+                <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+            @endforeach
+          @endif
         </div>
 
         @php
@@ -97,6 +107,16 @@
                 form="detail-form"
               />
             </div>
+            @if ($errors->has('rest_clockin{{ $sectNo }}'))
+              @foreach($errors->get('rest_clockin{{ $sectNo }}') as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
+            @if ($errors->has('rest_clockout{{ $sectNo }}'))
+              @foreach($errors->get('rest_clockout{{ $sectNo }}') as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
           </div>
         @php
           $sectionNumber++;
@@ -132,6 +152,16 @@
                 form="detail-form"
               />
             </div>
+            @if ($errors->has('rest_clockin{{ $sectionNumber }}'))
+              @foreach($errors->get('rest_clockin{{ $sectionNumber }}') as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
+            @if ($errors->has('rest_clockout{{ $sectionNumber }}'))
+              @foreach($errors->get('rest_clockout{{ $sectionNumber }}') as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
           </div>
         @endif
 
@@ -139,6 +169,11 @@
           <div class="section__index">備考</div>
           <div class="discript-section__content">
             <textarea name="discript" id="discript" form="detail-form">{{ $dispDetailDates[0]['descript'] }}</textarea>
+            @if ($errors->has('discript'))
+              @foreach($errors->get('discript') as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
           </div>
         </div>
       </div>
@@ -156,5 +191,6 @@
         </form>
       @endif
     </section>
+    <p>attendance-detail.blade.php</p>
   </main>
 @endsection
