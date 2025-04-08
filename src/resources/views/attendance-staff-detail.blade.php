@@ -1,6 +1,11 @@
+{{-- 管理者用詳細・修正ページ --}}
 @php
+  if (Auth::check('admin')){
+    $dispDetailDates[0]['gardFlg'] = 1;
+  } else {
+    $dispDetailDates[0]['gardFlg'] = 0;  
+  }
   if ($errors->any()) {
-    // dd($errors);
     $dispDetailDates[0]['id'] = old('id');
     $dispDetailDates[0]['target_id'] = old('user_id');   
     $dispDetailDates[0]['dateline'] = old('dateline');   
@@ -9,51 +14,53 @@
     $dispDetailDates[0]['clock_out'] = old('attendance_clockout');
     $dispDetailDates[0]['descript'] = old('descript');
     $dispDetailDates[0]['status'] = old('status');
-    $dispDetailDates[0]['gardFlg'] = 1;
+    $dispDetailDates[0]['gardFlg'] = old('gardFlg');
 
-      $attendanceRestDates[] = [
-        'rest_id'      => old('rest_id')?old('rest_id'):"",
-        'rest_in'      => old('rest_clockin')?old('rest_clockin'):"",
-        'rest_out'     => old('rest_clockout')?old('rest_clockout'):"",
-      ];
-      if (old('restSectMax')  > 0 ) {
-        for ($index = 1; $index <= old('restSectMax'); $index++) {
-          $attendanceRestDates[] = [
-            "rest_id" => old("rest_id{$index}"),
-            "rest_in" => old("rest_clockin{$index}"),
-            "rest_out" => old("rest_clockout{$index}"),
-          ];      
-        }
+    $attendanceRestDates[] = [
+      'rest_id'      => old('rest_id')?old('rest_id'):"",
+      'rest_in'      => old('rest_clockin')?old('rest_clockin'):"",
+      'rest_out'     => old('rest_clockout')?old('rest_clockout'):"",
+    ];
+    if (old('restSectMax')  > 0 ) {
+      for ($index = 1; $index <= old('restSectMax'); $index++) {
+        $attendanceRestDates[] = [
+          "rest_id" => old("rest_id{$index}"),
+          "rest_in" => old("rest_clockin{$index}"),
+          "rest_out" => old("rest_clockout{$index}"),
+        ];      
       }
-    // dd($attendanceRestDates);
+    }
+  }
+  $subTitle = "";
+  if ($dispDetailDates[0]['gardFlg'] == 1) {
+    $subTitle = "(管理者用ページ)";
   }
 @endphp
 
 @extends('layouts.app')
 
-@section('subtitle','勤怠詳細画面')
+@section('subtitle',"勤怠詳細画面{$subTitle}")
 
 @section('css')
-    @if ($dispDetailDates[0]['gardFlg'] == 1)
-      <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
-    @else
-      <link rel="stylesheet" href="{{ asset('assets/css/attendance-detail.css') }}" />
-    @endif
+  <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
 @endsection
 
 @section('header-contents')
-  <x-header-auth></x-header-auth>
+  @if($dispDetailDates[0]['gardFlg'] == 1)
+    <x-header-auth></x-header-auth>
+  @else
+    <x-header-user></x-header-user>
+  @endif
 @endsection  
 
 @section('main-contents')
-@php
-  $dateStrings =preg_split('/[-]/', $dispDetailDates[0]['dateline'] );
-  $startTime = $dispDetailDates[0]['clock_in'] <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_in'])) : "";
-  $endTime = $dispDetailDates[0]['clock_out']  <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_out'])) : "";
-  $sectionNumber = 0;
-@endphp
+  @php
+    $dateStrings =preg_split('/[-]/', $dispDetailDates[0]['dateline'] );
+    $startTime = $dispDetailDates[0]['clock_in'] <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_in'])) : "";
+    $endTime = $dispDetailDates[0]['clock_out']  <> "" ? date('H:i', strtotime($dispDetailDates[0]['clock_out'])) : "";
+    $sectionNumber = 0;
+  @endphp
   <main class="contents">
-    {{-- {{ dd($dispDetailDates[0]) }} --}}
     <section class="contents__lists-area">
       <div class="attendance-title">勤怠詳細</div>
       <div class="attendance-list">
@@ -91,11 +98,11 @@
             />
           </div>
         </div>
-        @error('clock_in')
-        {{ $message }}
-      @enderror
-        @error('clock_out')
-          {{ $message }}
+        @error("clock_in")
+          <div class="validatin-error__area">&#x274C;&emsp;{{$message}}</div> 
+        @enderror
+        @error("clock_out")
+          <div class="validatin-error__area">&#x274C;&emsp;{{$message}}</div> 
         @enderror
         @php
           $flg = 0;
@@ -114,11 +121,16 @@
             if(empty($restdate['id'])){
               $restdate['id'] = "";
             }
+
           @endphp
           <div class="rest-section">
             <div class="section__index">休憩{{ $sectNo }}</div>
             <div class="rest-section__clockin">
-              <input type="hidden" value="{{ $restdate['id'] }}" name="rest_id{{ $sectNo }}" form="detail-form">
+              @if (old("rest_id" . $sectNo))
+                <input type="hidden" value="{{ old('rest_id' . $sectNo) }}" name="rest_id{{ $sectNo }}" form="detail-form">
+              @else
+                <input type="hidden" value="{{ $restdate['id'] }}" name="rest_id{{ $sectNo }}" form="detail-form">
+              @endif
               <input
                 type="text"
                 class="clock-section"
@@ -139,23 +151,20 @@
                 form="detail-form"
               />
             </div>
-            @error("rest_in{$sectNo}")
-            {{ $message }}
-          @enderror
-          @error("rest_out{$sectNo}")
-            {{ $message }}
-          @enderror
-
           </div>
+          @error("rest_in" . $sectNo)
+            <div class="validatin-error__area">&#x274C;&emsp;{{$message}}</div> 
+          @enderror
+          @error("rest_out" . $sectNo)
+            <div class="validatin-error__area">&#x274C;&emsp;{{$message}}</div> 
+          @enderror
           @php
             $sectionNumber++;
           @endphp
         @endforeach
-        @if (old("restSectMax") > 0)
-          @php
-            $sectionNumber -= 1;
-          @endphp
-        @elseif (($sectionNumber <> 0) or ($flg == 0))
+        @if (( old("restSectMax") <> "" ))
+
+        @else
           @php
             if ($flg == 0){
               $sectionNumber = "";
@@ -185,21 +194,47 @@
                 form="detail-form"
               />
             </div>
+            @if ($errors->has("rest_in{{$sectionNumber}}"))
+              @foreach($errors->get("rest_in{{$sectionNumber}}") as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
+            @if ($errors->has("rest_out{{$sectionNumber}}"))
+              @foreach($errors->get("rest_out{{$sectionNumber}}") as $errorMassage )
+                  <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+              @endforeach
+            @endif
           </div>
         @endif
-
         <div class="descript-section">
           <div class="section__index">備考</div>
           <div class="descript-section__content">
             <textarea name="descript" id="descript" form="detail-form">{{ $dispDetailDates[0]['descript'] }}</textarea>
           </div>
-          @error('descript')
-            {{ $message }}
-          @enderror
+          @if ($errors->has('descript'))
+            @foreach($errors->get('descript') as $errorMassage )
+                <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
+            @endforeach
+          @endif
         </div>
       </div>
       @if ( $dispDetailDates[0]['status'] >=11 && $dispDetailDates[0]['status'] <=13 )
         <p class="request-stat">*承認待ちのため修正はできません。</p>
+        <input type="hidden" value="{{ $dispDetailDates[0]['id'] }}" name="id">
+        <input type="hidden" value="{{ $dispDetailDates[0]['target_id'] }}" name="user_id">
+        <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
+        <input type="hidden" value="{{ $dispDetailDates[0]['dateline'] }}" name="dateline">
+        <input type="hidden" value="{{ $dispDetailDates[0]['status'] }}" name="status">
+        @if (old("restSectMax") <> "")
+          <input type="hidden" value="{{ old("restSectMax") }}" name="restSectMax">
+        @else
+          <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
+        @endif
+        @if (old("gardFlg") <> "")
+          <input type="hidden" value="{{ old("gardFlg") }}" name="gardFlg">
+        @else
+          <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
+        @endif
       @else
         <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
           @csrf
@@ -214,10 +249,14 @@
           @else
             <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
           @endif
-          <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
-
+          @if (old("gardFlg") <> "")
+            <input type="hidden" value="{{ old("gardFlg") }}" name="gardFlg">
+          @else
+            <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
+          @endif
         </form>
       @endif
     </section>
+    <p>attendance-staff-detail.blade.php</p>
   </main>
 @endsection
