@@ -32,7 +32,7 @@ class RequestStampController extends Controller
                 $requestDates = Request_Attendance::where('user_id', Auth::user()->id)->where('status', 15)->orderBy('clock_in')->get();
             }
             $requestName  = User::where('id', Auth::user()->id)->first();
-            return view('request-user-list', compact('requestDates', 'requestName'));
+            return view('request-user-list', compact('requestDates', 'requestName', 'pageId'));
         }
     }
 
@@ -98,7 +98,7 @@ class RequestStampController extends Controller
                 'status'    => $reqStat,
                 'gardFlg'   => 0,
             ];
-            return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
+            return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
         }
     }
 
@@ -107,9 +107,7 @@ class RequestStampController extends Controller
         // 空欄かどうか、入力された時刻が不適切かをチェック
         $requestVaridateInstance = new StaffDetailRequest;
         [$inputData, $roles, $messages] = $requestVaridateInstance->varidateModify($request);
-        // dd([$inputData, $roles, $messages]);
         Validator::make($inputData, $roles, $messages)->validate();
-        // dd([$inputData, $roles, $messages]);
 
         // 休憩同士の関係をチェック
         // [$inputData, $roles, $messages] = $requestVaridateInstance->varidateRestRelation($request);
@@ -181,24 +179,27 @@ class RequestStampController extends Controller
         $dispDetailDatesMain = [];
         foreach ($dispDetailDates as $date) {
 
+            $date['status'] = 12;
+
             if ($date['clock_in'] <> "") {
-                $date['status'] = 11;
+                // $date['status'] = 11;
                 $date['clock_in'] = $date['dateline'] . " " . $date['clock_in'];
             }
             if ($date['clock_out'] <> "") {
-                $date['status'] = 12;
+                // $date['status'] = 12;
                 $date['clock_out'] = $date['dateline'] . " " . $date['clock_out'];
             }
 
             if (!empty($attendanceRestDates)) {
                 foreach ($attendanceRestDates as $restDate) {
+                    $date['status'] = 12;
 
                     if ($restDate['rest_in'] <> "") {
-                        $date['status'] = $date['status'] == 12 ? 12 : 13;
+                        // $date['status'] = $date['status'] == 12 ? 12 : 13;
                         $restDate['rest_in'] = $date['dateline'] . " " . $restDate['rest_in'];
                     }
                     if ($restDate['rest_out'] <> "") {
-                        $date['status'] = $date['status'] == 13 ? 12 : 11;
+                        // $date['status'] = $date['status'] == 13 ? 12 : 11;
                         $restDate['rest_out'] = $date['dateline'] . " " . $restDate['rest_out'];
                     }
 
@@ -264,7 +265,6 @@ class RequestStampController extends Controller
         // 該当勤怠データを更新
         $queryReqAttendance = Request_Attendance::where('id', $attendance_correct_request);
         $requestDate = $queryReqAttendance->first();
-
         if (!empty($requestDate)) {
             $queryAttendance = Attendance::where('id', $requestDate['attendance_id']);
             $paramsAttenndance = [
