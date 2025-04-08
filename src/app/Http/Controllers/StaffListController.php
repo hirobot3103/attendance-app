@@ -228,6 +228,7 @@ class StaffListController extends Controller
         } else {
 
             // バリデーションでエラーがあった後、GETで呼び出される
+            // dd($request->old('rest_id'));
             $dispDetailDates[] = [];
             $attendanceRestDates = [];
             return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
@@ -255,7 +256,7 @@ class StaffListController extends Controller
                 $reqId = $id;
                 $reqClockIn = "";
                 $reqClockOut = "";
-                $reqStat = 14;  // 新規追加申請
+                $reqStat = 12;  // 新規追加申請
 
             } else {
                 $reqId = $userAttendanceDatas['id'];
