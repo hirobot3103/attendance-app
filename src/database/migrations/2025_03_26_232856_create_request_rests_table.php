@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('request_rests', function (Blueprint $table) {
             $table->id();
             $table->integer('attendance_id')->default(0)->nullable();
+            $table->integer('req_attendance_id')->default(0)->nullable();
             $table->integer('rest_id')->default(0)->nullable();
             $table->dateTime('rest_in')->nullable();  // 休憩開始日時
             $table->dateTime('rest_out')->nullable(); // 休憩終了日時
