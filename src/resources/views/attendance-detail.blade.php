@@ -12,7 +12,8 @@
     $dispDetailDates[0]['descript'] = old('descript');
     $dispDetailDates[0]['status'] = old('status');
     $dispDetailDates[0]['gardFlg'] = old('gardFlg');
-
+                           
+    
     $attendanceRestDates = [];
     $attendanceRestDates[] = [
       'rest_id'      => old('rest_id')?old('rest_id'):"",
