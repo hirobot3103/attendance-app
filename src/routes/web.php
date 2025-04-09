@@ -47,6 +47,7 @@ Route::get('/login', function () {
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:web');
 
+// 一般ユーザー用ページ
 Route::middleware(['auth:web'])->group(function () {
 
     // メール認証誘導画面関連
@@ -71,6 +72,7 @@ Route::middleware(['auth:web'])->group(function () {
 
 // 一般ユーザーのログアウト
 Route::post('/logout', [LogoutController::class, 'userLogout'])->name('logout');
+
 
 // 管理者のログイン
 Route::get('/admin/login', function () {

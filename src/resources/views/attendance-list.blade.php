@@ -1,3 +1,4 @@
+{{-- 一般ユーザー用勤怠一覧画面 --}}
 @extends('layouts.app')
 
 @section('subtitle','勤怠一覧画面')
@@ -86,6 +87,7 @@
         </table>
       </section>
     </main>
+    <p>attendance-list.blade.php</p>
     <script>
       async function sendData(data) {
         document.forms["nav_header"].submit();
