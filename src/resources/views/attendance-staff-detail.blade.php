@@ -236,7 +236,11 @@
           <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
         @endif
       @else
-        <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
+        @if(Auth::check('admin'))
+          <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
+        @else
+          <form action="/attendance/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
+        @endif
           @csrf
           <button type="submit" class="form-btn" name="admin_btn_mod">修  正</button>
           <input type="hidden" value="{{ $dispDetailDates[0]['id'] }}" name="id">
@@ -257,8 +261,6 @@
         </form>
       @endif
     </section>
-    {{-- <p>$attendanceRestDates</p>
-    <p>{{$attendanceRestDates}}</p> --}}
     <p>attendance-staff-detail.blade.php</p>
   </main>
 @endsection

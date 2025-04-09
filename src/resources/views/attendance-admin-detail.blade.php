@@ -62,7 +62,6 @@
         @php
           $flg = 0;
         @endphp
-        {{-- {{ dd($attendanceRestDates); }} --}}
         @foreach ( $attendanceRestDates as $restdate )
           @php
             $flg = 1;
