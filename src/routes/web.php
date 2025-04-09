@@ -82,6 +82,7 @@ Route::get('/admin/login', function () {
 
 Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:admin');
 
+// 管理者用ページ
 Route::middleware(['admin.guard'])->group(function () {
 
     Route::get('/admin/attendance/list', [AttendanceAdminListController::class, 'index'])->name('admin.dashboard');

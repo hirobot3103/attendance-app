@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StaffDetailRequest extends FormRequest
@@ -61,7 +60,7 @@ class StaffDetailRequest extends FormRequest
         $param['clock_in'] = $input['attendance_clockin'] ? $input['dateline'] . ' ' . $input['attendance_clockin'] : "";
         $param['clock_out'] = $input['attendance_clockout'] ? $input['dateline'] . ' ' . $input['attendance_clockout'] : "";
 
-        // 出勤と退勤両方入力されている場合のみルールとメッセージを追加
+        // 出勤と退勤両方入力されている場合に適用するルールとメッセージを追加
         if (($param['clock_in'] <> "") && ($param['clock_out'] <> "")) {
             $dateStart = $input['dateline'] . ' ' . $input['attendance_clockin'];
             $dateEnd   = $input['dateline'] . ' ' . $input['attendance_clockout'];
@@ -78,6 +77,7 @@ class StaffDetailRequest extends FormRequest
 
         $param['descript']  = $input['descript'];
 
+        // 休憩時間に係るルールとメッセージをセット
         if (($input['rest_clockin'] <> "") || ($input['rest_clockout'] <> "")) {
             $param["rest_in"] = $input['rest_clockin'] ? $input['dateline'] . ' ' . $input['rest_clockin'] : "";
             $param["rest_out"] = $input['rest_clockout'] ? $input['dateline'] . ' ' . $input['rest_clockout'] : "";
@@ -103,6 +103,7 @@ class StaffDetailRequest extends FormRequest
                 $paramMsg["rest_out.before_or_equal"]  = $msg;
             }
         }
+
         if ((int)$input['restSectMax'] > 0) {
             for ($index = 1; $index <= (int)$input['restSectMax']; $index++) {
                 if (($input["rest_clockin{$index}"] <> "") || ($input["rest_clockout{$index}"] <> "")) {
@@ -133,23 +134,5 @@ class StaffDetailRequest extends FormRequest
             }
         }
         return [$param, $paramRule, $paramMsg];
-    }
-
-    // 入力のチェック済みが前提
-    public function varidateRestRelation(Request $request)
-    {
-        $input = [];
-        foreach ($request->all() as $key => $val) {
-            $input[$key] = $val;
-        }
-        $param = $input;
-
-        // 休憩データがある場合は、昇順で並べ替え
-        // $paramMsg["rest_in.required"]        = "休憩開始時間(hh:mm形式)を入力してください。";
-        // $paramMsg["rest_in.date"]            = "休憩開始時間(hh:mm形式)で入力してください。";
-        // $paramMsg["rest_in.after_or_equal"]  = "休憩開始時間が勤務開始時刻{$dateStart}より前となっています。";
-        // $paramMsg["rest_out.required"]       = "休憩終了時間(hh:mm形式)を入力してください。";
-        // $paramMsg["rest_out.date"]           = "休憩終了時間(hh:mm形式)で入力してください。";
-        // $paramMsg["rest_out.before_or_equal"] = "休憩終了時間が退勤時刻{$dateEnd}より後となっています。";
     }
 }

@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
-use App\Models\Rest;
 use Carbon\Carbon;
 
 class AttendanceListController extends Controller
@@ -126,6 +125,8 @@ class AttendanceListController extends Controller
             'year'      => $currentYear,
             'month'     => $currentMonth,
             'endDay'    => $currentEndOfMonth,
+            'target_id' => $loginUserId,
+            'user_id' => $loginUserId,
         ];
 
         return view('attendance-list', compact('navLinkDate', 'dispAttendanceDatas'));
