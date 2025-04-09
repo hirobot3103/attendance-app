@@ -1,6 +1,6 @@
 {{-- 管理者用詳細・修正ページ --}}
 @php
-  if (Auth::check('admin')){
+  if (Auth::guard('admin')->check()){
     $dispDetailDates[0]['gardFlg'] = 1;
   } else {
     $dispDetailDates[0]['gardFlg'] = 0;  
@@ -219,7 +219,7 @@
         </div>
       </div>
       @if ( $dispDetailDates[0]['status'] >=11 && $dispDetailDates[0]['status'] <=13 )
-        <p class="request-stat">*承認待ちのため修正はできません。</p>
+        <p class="request-stat">承認待ち</p>
         <input type="hidden" value="{{ $dispDetailDates[0]['id'] }}" name="id">
         <input type="hidden" value="{{ $dispDetailDates[0]['target_id'] }}" name="user_id">
         <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
@@ -236,7 +236,7 @@
           <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
         @endif
       @else
-        @if(Auth::check('admin'))
+        @if(Auth::guard('admin')->check())
           <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
         @else
           <form action="/attendance/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
