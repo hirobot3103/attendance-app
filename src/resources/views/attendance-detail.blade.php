@@ -2,6 +2,7 @@
 @php
   $dispDetailDates[0]['gardFlg'] = 0;  
   if ($errors->any()) {
+    $dispDetailDates = [];
     $dispDetailDates[0]['id'] = old('id');
     $dispDetailDates[0]['target_id'] = old('user_id');   
     $dispDetailDates[0]['dateline'] = old('dateline');   
@@ -11,7 +12,9 @@
     $dispDetailDates[0]['descript'] = old('descript');
     $dispDetailDates[0]['status'] = old('status');
     $dispDetailDates[0]['gardFlg'] = old('gardFlg');
-
+                           
+    
+    $attendanceRestDates = [];
     $attendanceRestDates[] = [
       'rest_id'      => old('rest_id')?old('rest_id'):"",
       'rest_in'      => old('rest_clockin')?old('rest_clockin'):"",
@@ -28,9 +31,6 @@
     }
   }
   $subTitle = "";
-  if ($dispDetailDates[0]['gardFlg'] == 1) {
-    $subTitle = "(管理者用ページ)";
-  }
 @endphp
 
 @extends('layouts.app')
@@ -215,7 +215,7 @@
         </div>
       </div>
       @if ( $dispDetailDates[0]['status'] >=11 && $dispDetailDates[0]['status'] <=13 )
-        <p class="request-stat">*承認待ちのため修正はできません。</p>
+        <p class="request-stat">*承認待ち</p>
         <input type="hidden" value="{{ $dispDetailDates[0]['id'] }}" name="id">
         <input type="hidden" value="{{ $dispDetailDates[0]['target_id'] }}" name="user_id">
         <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">

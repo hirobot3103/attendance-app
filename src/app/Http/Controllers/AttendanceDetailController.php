@@ -68,7 +68,6 @@ class AttendanceDetailController extends Controller
             'gardFlg'   => 0,
         ];
 
-        // dd($dispDetailDates);
         // return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
         return view('attendance-detail', compact('dispDetailDates', 'attendanceRestDates'));
     }
