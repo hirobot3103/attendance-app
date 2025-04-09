@@ -87,6 +87,7 @@ class RestsTableSeeder extends Seeder
 
             $params[] = [
                 'attendance_id' => $rowData->attendance_id,
+                'req_attendance_id' => $rowData->id,
                 'rest_id'       => $restdata->id,
                 'rest_in'       => $rtnStart,
                 'rest_out'      => $rtnEnd,
@@ -114,6 +115,7 @@ class RestsTableSeeder extends Seeder
                 foreach ($rtnParams as $oneParam) {
                     $params[] = [
                         'attendance_id' => $oneParam["attendance_id"],
+                        'req_attendance_id' => $oneParam["req_attendance_id"],
                         'rest_id'       => $oneParam["rest_id"],
                         'rest_in'       => $oneParam["rest_in"],
                         'rest_out'      => $oneParam["rest_out"],
@@ -128,6 +130,7 @@ class RestsTableSeeder extends Seeder
                 foreach ($restDatas as $restRowData) {
                     $params[] = [
                         'attendance_id' => $rowData->attendance_id,
+                        'req_attendance_id' => $rowData->id,
                         'rest_id'       => $restRowData->id,
                         'rest_in'       => $restRowData->rest_in,
                         'rest_out'      => $restRowData->rest_out,

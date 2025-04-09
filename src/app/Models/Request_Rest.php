@@ -12,6 +12,7 @@ class Request_Rest extends Model
     protected $table = 'request_rests';
 
     protected $fillable = [
+        'req_attendance_id',
         'attendance_id',
         'rest_id',
         'rest_in',

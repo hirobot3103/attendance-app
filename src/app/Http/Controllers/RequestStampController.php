@@ -52,7 +52,8 @@ class RequestStampController extends Controller
         if (Auth::guard('admin')->check()) {
             $attendanceDetailDates = Request_Attendance::where('id', $id)->first();
             $attendanceUserName    = User::where('id', $attendanceDetailDates['user_id'])->first();
-            $attendanceRestDates   = Request_Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])->get();
+            $attendanceRestDates   = Request_Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])
+                ->where('req_attendance_id', $id)->get();
 
             $reqId       = $id;
             $reqDate     = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
@@ -78,7 +79,8 @@ class RequestStampController extends Controller
         } else {
             $attendanceUserName    = User::where('id', Auth::user()->id)->first();
             $attendanceDetailDates = Request_Attendance::where('id', $id)->first();
-            $attendanceRestDates   = Request_Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])->get();
+            $attendanceRestDates   = Request_Rest::where('attendance_id', $attendanceDetailDates['attendance_id'])
+                ->where('req_attendance_id', $id)->get();
 
             $reqId       = $id;
             $reqDate     = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
@@ -222,27 +224,39 @@ class RequestStampController extends Controller
             ];
         }
 
+        // dd($attendanceRestDatesMain);
+
+        // dd($dispDetailDatesMain);
         // 申請DBへ登録
-        $attendanceInstance                = new Request_Attendance();
-        $attendanceInstance->user_id       = $dispDetailDatesMain[0]['user_id'];
-        $attendanceInstance->attendance_id = $dispDetailDatesMain[0]['attendance_id'];
-        $attendanceInstance->clock_in      = $dispDetailDatesMain[0]['clock_in'];
-        $attendanceInstance->clock_out     = $dispDetailDatesMain[0]['clock_out'];
-        $attendanceInstance->descript      = $dispDetailDatesMain[0]['descript'];
-        $attendanceInstance->status        = $dispDetailDatesMain[0]['status'];
-        $attendanceInstance->save();
+        // $attendanceInstance                = new Request_Attendance();
+        // $attendanceInstance->user_id       = $dispDetailDatesMain[0]['user_id'];
+        // $attendanceInstance->attendance_id = $dispDetailDatesMain[0]['attendance_id'];
+        // $attendanceInstance->clock_in      = $dispDetailDatesMain[0]['clock_in'];
+        // $attendanceInstance->clock_out     = $dispDetailDatesMain[0]['clock_out'];
+        // $attendanceInstance->descript      = $dispDetailDatesMain[0]['descript'];
+        // $attendanceInstance->status        = $dispDetailDatesMain[0]['status'];
+        $newParam = [
+            'user_id'       => $dispDetailDatesMain[0]['user_id'],
+            'attendance_id' => $dispDetailDatesMain[0]['attendance_id'],
+            'clock_in'      => $dispDetailDatesMain[0]['clock_in'],
+            'clock_out'     => $dispDetailDatesMain[0]['clock_out'],
+            'descript'      => $dispDetailDatesMain[0]['descript'],
+            'status'        => $dispDetailDatesMain[0]['status'],
+        ];
+        $newRequestAttendance = Request_Attendance::create($newParam);
 
         // 該当する勤怠データのステータスを申請中に変更
         Attendance::where('id', $dispDetailDatesMain[0]['attendance_id'])->update(['status' => $dispDetailDatesMain[0]['status']]);
 
         // 休憩関連の申請データを保存
         if (!empty($attendanceRestDatesMain)) {
-            $params   = [];
             $restDate = [];
+            $params   = [];
             foreach ($attendanceRestDatesMain as $restDate) {
                 $newId  = $restDate['rest_id'] > 0 ? $restDate['rest_id'] : 0;
                 $params = [
                     'rest_id'       => $newId,
+                    'req_attendance_id' => $newRequestAttendance->id,
                     'attendance_id' => $restDate['request_attendance_id'],
                     'rest_in'       => $restDate['rest_in'],
                     'rest_out'      => $restDate['rest_out'],
@@ -263,8 +277,9 @@ class RequestStampController extends Controller
         }
 
         // 該当勤怠データを更新
-        $queryReqAttendance = Request_Attendance::where('id', $attendance_correct_request);
+        $queryReqAttendance = Request_Attendance::where('id', $attendance_correct_request)->orderBy('updated_at', 'DESC');
         $requestDate = $queryReqAttendance->first();
+
         if (!empty($requestDate)) {
             $queryAttendance = Attendance::where('id', $requestDate['attendance_id']);
             $paramsAttenndance = [
@@ -275,8 +290,10 @@ class RequestStampController extends Controller
             ];
             $queryAttendance->update($paramsAttenndance);
 
-            $queryReqRest = Request_Rest::where('attendance_id', $requestDate['attendance_id']);
+            $queryReqRest = Request_Rest::where('attendance_id', $requestDate['attendance_id'])
+                ->where('req_attendance_id', $requestDate['id']);
             $requestRestData = $queryReqRest->get();
+
             if (!empty($requestRestData)) {
                 foreach ($requestRestData as $restData) {
                     $queryRest  = Rest::where('id', $restData['rest_id']);

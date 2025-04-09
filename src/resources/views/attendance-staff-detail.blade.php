@@ -257,6 +257,8 @@
         </form>
       @endif
     </section>
+    {{-- <p>$attendanceRestDates</p>
+    <p>{{$attendanceRestDates}}</p> --}}
     <p>attendance-staff-detail.blade.php</p>
   </main>
 @endsection

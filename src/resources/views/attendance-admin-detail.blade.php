@@ -165,6 +165,8 @@
         @endif
       </section>
     </section>
+    <p>$attendanceRestDates</p>
+    <p>{{$attendanceRestDates}}</p>
     <p>attendance-admin-detail.php</p>
   </main>
 @endsection
