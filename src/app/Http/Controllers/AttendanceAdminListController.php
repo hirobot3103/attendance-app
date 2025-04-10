@@ -74,7 +74,7 @@ class AttendanceAdminListController extends Controller
         $dateStart = $currentYear . '-' . $currentMonth . '-' . $currentDay . ' 00:00:00';
         $dateEnd = $currentYear . '-' . $currentMonth . '-' . $currentDay . ' 23:59:59';
 
-        $loginUserId = Auth::user()->id;
+        // $loginUserId = Auth::user()->id;
 
         $query = Attendance::whereBetween('clock_in', [$dateStart, $dateEnd]);
         $userAttendanceDatas = $query->orderBy('clock_in', 'asc')->orderBy('id', 'asc')->get();
