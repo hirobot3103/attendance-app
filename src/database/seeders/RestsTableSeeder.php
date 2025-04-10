@@ -140,5 +140,4 @@ class RestsTableSeeder extends Seeder
         }
         DB::table('request_rests')->insert($params);
     }
-    // 休憩入力欄の不具合（開始・終了ともに空欄だった場合の振る舞い）一般ユーザーでのバリデーションとviewの修正、休憩同士の関係チェック、viewレイアウトの調整（エラー部分と備考、修正ボタン等）
 }
