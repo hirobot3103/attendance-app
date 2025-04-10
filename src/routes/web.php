@@ -90,7 +90,6 @@ Route::middleware(['admin.guard'])->group(function () {
     Route::get('/admin/attendance/list', [AttendanceAdminListController::class, 'index'])->name('admin.dashboard');
     Route::post('/admin/attendance/list', [AttendanceAdminListController::class, 'search'])->name('admin.attendant-serch');
 
-
     Route::get('/admin/staff/list', [StaffListController::class, 'index'])->name('admin.stafflist');
     Route::get('/admin/attendance/staff/{id}', [StaffListController::class, 'list'])->name('admin.staffattend');
     Route::post('/admin/attendance/staff/{id}', [StaffListController::class, 'search'])->name('admin.staffserach');
