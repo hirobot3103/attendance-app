@@ -128,8 +128,6 @@ class StaffDetailRequest extends FormRequest
 
     public function varidateRestRelation($param, $paramRule, $paramMsg)
     {
-        // $param = $varidatedData;
-
         // 休憩時間の重複など矛盾を調べるため、入力されたデータから休憩データのみ取り出して並べ替える
         $restDatas = [];
         foreach ($param as $key => $value) {
@@ -176,7 +174,6 @@ class StaffDetailRequest extends FormRequest
                 }
             }
         }
-
         return [$param, $paramRule, $paramMsg];
     }
 }
