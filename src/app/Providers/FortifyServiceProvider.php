@@ -18,10 +18,6 @@ use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\AdminLoginRequest;
 
-// // Fortifyでカスタムフォームリクエストを使うために必要
-// use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
-
-
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Auth\RegisterController;
@@ -29,12 +25,8 @@ use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 
 class FortifyServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        // 登録成功後に自動ログインをしない指定をするために
         // FortifyのRegisterUserControllerをRegisterControllerに切り替え
         $this->app->singleton(
             RegisteredUserController::class,
@@ -51,9 +43,6 @@ class FortifyServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Fortify::createUsersUsing(CreateNewUser::class);
@@ -120,7 +109,5 @@ class FortifyServiceProvider extends ServiceProvider
 
             return Limit::perMinute(10)->by($email . $request->ip());
         });
-
-        // $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
     }
 }
