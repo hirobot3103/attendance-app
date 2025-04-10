@@ -17,13 +17,13 @@ use App\Http\Controllers\StaffListController;
 Route::get('/', function () {
     $previousUrl = url()->previous();
     if (preg_match("/\wadmin/", $previousUrl, $result)) {
-        if (Auth::guard('admin')->check()) {
-            return redirect($previousUrl);
-        }
+        // if (Auth::guard('admin')->check()) {
+        //     return redirect($previousUrl);
+        // }
         return redirect('/admin/login');
     }
     if (Auth::guard('web')->check()) {
-        return redirect($previousUrl);
+        // return redirect($previousUrl);
     }
     return redirect('/login');
 });
@@ -40,7 +40,7 @@ Route::middleware('verified')->group(function () {
 // 一般ユーザーのログイン
 Route::get('/login', function () {
     if (Auth::guard('web')->check()) {
-        return redirect(route('user.dashboard'));
+        // return redirect(route('user.dashboard'));
     }
     return view('auth.login');
 })->name('login');
