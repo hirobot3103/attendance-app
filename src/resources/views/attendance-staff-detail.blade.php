@@ -5,8 +5,10 @@
   } else {
     $dispDetailDates[0]['gardFlg'] = 0;  
   }
+
   if ($errors->any()) {
     $dispDetailDates[0]['id'] = old('id');
+    $dispDetailDates[0]['user_id'] = old('user_id');   
     $dispDetailDates[0]['target_id'] = old('user_id');   
     $dispDetailDates[0]['dateline'] = old('dateline');   
     $dispDetailDates[0]['name'] = old('name');
@@ -235,6 +237,8 @@
         @else
           <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
         @endif
+      @elseif($dispDetailDates[0]['status'] =15)
+      <p class="request-stat">承認済み</p>      
       @else
         @if(Auth::guard('admin')->check())
           <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">

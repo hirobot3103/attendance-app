@@ -33,16 +33,6 @@ class StaffDetailRequest extends FormRequest
         ];
     }
 
-    public function attributes()
-    {
-        return [
-            // 'name'                  => 'お名前',
-            // 'email'                 => 'メールアドレス',
-            // 'password'              => 'パスワード',
-            // 'password_confirmation' => '確認用パスワード',
-        ];
-    }
-
     // 勤怠入力関係のバリデーションルール、エラーメッセージをセット
     // <戻値>
     // $param:検証する値を格納した配列(一部値を加工)
@@ -133,6 +123,60 @@ class StaffDetailRequest extends FormRequest
                 }
             }
         }
+        return [$paramRet, $paramRuleRet, $paramMsgRet] = $this->varidateRestRelation($param, $paramRule, $paramMsg);
+    }
+
+    public function varidateRestRelation($param, $paramRule, $paramMsg)
+    {
+        // $param = $varidatedData;
+
+        // 休憩時間の重複など矛盾を調べるため、入力されたデータから休憩データのみ取り出して並べ替える
+        $restDatas = [];
+        foreach ($param as $key => $value) {
+            if (preg_match('/^(rest_in|rest_out)/', $key, $match)) {
+                $restBaseDatas[$key] = $value;
+            }
+        }
+        if (!empty($restBaseDatas)) {
+            asort($restBaseDatas);
+            // dd($restBaseDatas);
+            $newIndex = 0;
+            $restDatas = [];
+            foreach ($restBaseDatas as $key => $value) {
+                $restDatas[$newIndex] = [$key => $value];
+                $newIndex++;
+            }
+
+            // エラーが無ければ、添字：0,偶数＝開始時間、奇数：終了時間となっているか
+            for ($index = 0; $index < count($restDatas) - 1; $index += 1) {
+                $startKeyName = array_key_first($restDatas[$index]);
+                $endKeyName   = array_key_first($restDatas[$index + 1]);
+                $partsKey = substr($startKeyName, -1, 1);
+
+                if ($partsKey == 'n') {
+                    $pairKey = 'rest_out';
+
+                    if ($endKeyName <> $pairKey) {
+                        $paramRule["{$endKeyName}"][] = "after_or_equal:" . $param[$pairKey];
+                        $paramMsg["{$endKeyName}.after_or_equal"] = "休憩時間帯が他の休憩と被っているか、不適切な値です。";
+                    }
+                } elseif ($partsKey == 't') {
+                    $pairKey = 'rest_in';
+                    $paramRule["{$startKeyName}"][] = "after_or_equal:" . $param[$pairKey];
+                    $paramMsg["{$startKeyName}.after_or_equal"] = "休憩時間帯が他の休憩と被っているか、不適切な値です。";
+                } else {
+                    $pairKey = 'rest_out' . $partsKey;
+                    if ($endKeyName <> $pairKey) {
+                        $paramRule["{$endKeyName}"][] = "after_or_equal:" . $param[$pairKey];
+                        $paramMsg["{$endKeyName}.after_or_equal"] = "休憩時間帯が他の休憩と被っているか、不適切な値です。";
+                    } elseif ($endKeyName == $pairKey) {
+                        // $paramRule["{$startKeyName}"][] = "after_or_equal:" . $param[$pairKey];
+                        // $paramMsg["{$startKeyName}.after_or_equal"] = "休憩時間帯が他の休憩と被っているか、不適切な値です。";
+                    }
+                }
+            }
+        }
+
         return [$param, $paramRule, $paramMsg];
     }
 }

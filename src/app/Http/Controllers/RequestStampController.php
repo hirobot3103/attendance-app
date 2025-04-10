@@ -11,6 +11,7 @@ use App\Models\Request_Attendance;
 use App\Models\Request_Rest;
 use App\Models\User;
 use App\Http\Requests\StaffDetailRequest;
+use App\Http\Requests\StaffRestDetailRequest;
 
 class RequestStampController extends Controller
 {
@@ -112,11 +113,10 @@ class RequestStampController extends Controller
         $requestVaridateInstance = new StaffDetailRequest;
         [$inputData, $roles, $messages] = $requestVaridateInstance->varidateModify($request);
         Validator::make($inputData, $roles, $messages)->validate();
-        // dd([$inputData, $roles, $messages]);
 
-        // 休憩データ同士の関係をチェック
-        // [$inputData, $roles, $messages] = $requestVaridateInstance->varidateRestRelation($request);
-        // dd([$inputData, $roles, $messages]);
+        // // 休憩データ同士の関係をチェック
+        // $requestRestVaridateInstance = new StaffRestDetailRequest;
+        // [$inputData, $roles, $messages] = $requestRestVaridateInstance->varidateRestRelation($inputData);
         // Validator::make($inputData, $roles, $messages)->validate();
 
         if ($id <> 0) {
@@ -289,26 +289,31 @@ class RequestStampController extends Controller
             if (!empty($requestRestData)) {
 
                 // restsテーブル（現状：申請が適用される前）を取得
-                $currentRestQuery = Rest::where('attendance_id', $requestDate['attendance_id']);
+                $currentQueryInstance = new Rest();
+                $currentRestQuery = $currentQueryInstance::where('attendance_id', $requestDate['attendance_id']);
                 $currentRestDatas = $currentRestQuery->get();
-
                 foreach ($currentRestDatas as $currentRestData) {
                     $currentRestId = $currentRestData['id'];
-                    $requestRestData = $queryReqRest->where('id', $currentRestId)->first();
+                    $QueryInstancerequest = new Request_Rest();
+                    $requestRestData = $QueryInstancerequest::where('attendance_id', $requestDate['attendance_id'])
+                        ->where('req_attendance_id', $requestDate['id'])
+                        ->where('rest_id', $currentRestId)->first();
 
                     // 現状の休暇データが申請で更新される対象かどうか
                     if (!empty($requestRestData)) {
 
                         // 更新対象（現状で休暇データがあり、申請側にもある）
                         $paramsRest = [
-                            'rest_in'  => $requestRestData[0]['rest_in'],
-                            'rest_out' => $requestRestData[0]['rest_out'],
+                            'rest_in'  => $requestRestData['rest_in'],
+                            'rest_out' => $requestRestData['rest_out'],
                         ];
-                        $queryReqRest->where('id', $currentRestId)->update($paramsRest);
+                        $currentQueryInstance = new Rest();
+                        $currentQueryInstance::where('id', $currentRestId)->update($paramsRest);
                     } else {
 
                         // 削除対象（現状では休暇データがあるが申請側にはない）
-                        $currentRestQuery->where('id', $currentRestId)->delete();
+                        $currentQueryInstance = new Rest();
+                        $currentQueryInstance::where('id', $currentRestId)->delete();
                     }
                 }
             }

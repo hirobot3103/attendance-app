@@ -40,7 +40,7 @@ class AttendanceDetailController extends Controller
                 $reqId = $id;
                 $reqClockIn = "";
                 $reqClockOut = "";
-                $reqStat = 12;  // 新規追加申請
+                $reqStat = 14;  // 新規追加申請
 
             } else {
                 $reqId = $userAttendanceDatas['id'];
