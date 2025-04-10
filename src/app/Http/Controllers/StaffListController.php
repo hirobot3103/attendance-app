@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\Rest;
@@ -219,25 +220,27 @@ class StaffListController extends Controller
 
     public function detail(Request $request, int $id)
     {
-        // バリデーション（休憩の項目数は可変)
-
         if ($request->has('uid')) {
             $attendanceUserName  = User::where('id', $request->uid)->first();
         } elseif ($request->has('user_id')) {
             $attendanceUserName  = User::where('id', $request->user_id)->first();
         } else {
 
-            // バリデーションでエラーがあった後、GETで呼び出される
-            $dispDetailDates[] = [];
-            $attendanceRestDates = [];
-            return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
+            // エラーがあった後、ブラウザで再表示した際、GETで呼び出される
+            $attendanceUserName  = User::where('id', Auth::user()->id)->first();
+            if ($request->session()->get('errors')) {
+                $dispDetailDates[] = [];
+                $attendanceRestDates = [];
+                return view('attendance-staff-detail', compact('dispDetailDates', 'attendanceRestDates'));
+            }
         }
+        $userId = $attendanceUserName['id'];
 
         if ($id <> 0) {
             $attendanceDetailDates = Attendance::where('id', $id)->first();
             $attendanceRestDates = Rest::where('attendance_id', $attendanceDetailDates['id'])->get();
             $reqId = $id;
-            $reqUserId = $request->uid;
+            $reqUserId = $userId;
             $reqDate = date('Y-m-d', strtotime($attendanceDetailDates->clock_in));
             $reqName = $attendanceUserName->name;
             $reqClockIn = $attendanceDetailDates->clock_in;
@@ -255,7 +258,7 @@ class StaffListController extends Controller
                 $reqId = $id;
                 $reqClockIn = "";
                 $reqClockOut = "";
-                $reqStat = 12;  // 新規追加申請
+                $reqStat = 14;  // 新規追加申請
 
             } else {
                 $reqId = $userAttendanceDatas['id'];
@@ -263,7 +266,7 @@ class StaffListController extends Controller
                 $reqClockOut = "";
                 $reqStat = $userAttendanceDatas['status'];
             }
-            $reqUserId = $request->uid;
+            $reqUserId = $userId;
             $reqName = $attendanceUserName->name;
             $reqDescript = "";
 
@@ -272,6 +275,7 @@ class StaffListController extends Controller
 
         $dispDetailDates[] = [
             'id' => $reqId,
+            'user_id' => $reqUserId,
             'target_id' => $reqUserId,
             'dateline' => $reqDate,
             'name' => $reqName,
