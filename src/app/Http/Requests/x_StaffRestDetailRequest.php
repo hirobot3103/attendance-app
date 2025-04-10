@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
-use Carbon\Carbon;
 
 class StaffRestDetailRequest extends FormRequest
 {
@@ -12,40 +10,6 @@ class StaffRestDetailRequest extends FormRequest
     {
         return true;
     }
-
-    //     "attendance_clockin" => "09:50"
-    //     "attendance_clockout" => "18:07"
-    //     "rest_id" => "16"
-    //     "rest_clockin" => "10:40"
-    //     "rest_clockout" => "11:40"
-    //     "rest_id1" => "17"
-    //     "rest_clockin1" => "12:10"
-    //     "rest_clockout1" => "12:30"
-    //     "rest_id2" => "18"
-    //     "rest_clockin2" => "13:00"
-    //     "rest_clockout2" => "13:45"
-    //     "rest_id3" => null
-    //     "rest_clockin3" => null
-    //     "rest_clockout3" => null
-    //     "descript" => "遅刻：通院のため"
-    //     "_token" => "afVfUyQo57ziopNJ0O6l5pUgHG9KzkjPEXnZYfzS"
-    //     "admin_btn_mod" => null
-    //     "id" => "12"
-    //     "user_id" => "2"
-    //     "name" => "辺見 エリ子"
-    //     "dateline" => "2025-04-08"
-    //     "status" => "15"
-    //     "restSectMax" => "3"
-    //     "gardFlg" => "1"
-    //     "clock_in" => "2025-04-08 09:50"
-    //     "clock_out" => "2025-04-08 18:07"
-    //     "rest_in" => "2025-04-08 10:40"
-    //     "rest_out" => "2025-04-08 11:40"
-    //     "rest_in1" => "2025-04-08 12:10"
-    //     "rest_out1" => "2025-04-08 12:30"
-    //     "rest_in2" => "2025-04-08 13:00"
-    //     "rest_out2" => "2025-04-08 13:45"
-    //   ]
     public function varidateRestRelation($varidatedData = [])
     {
         $param = $varidatedData;
