@@ -162,6 +162,15 @@ class AttendanceAdminListController extends Controller
             $paramDay = $mode->format('Y-m-d');
         }
 
+        // 日付($request->day__current)が未来なら、現時点の日付を表示
+        $nowBaseTime = new Carbon();
+        $nowTime = $nowBaseTime->format('Y-m-d');
+        $inputTime = $mode->format('Y-m-d');
+
+        if ($nowTime < ($inputTime)) {
+            $paramDay = $nowTime;
+        }
+
         return  $this->actionMain($paramDay);
     }
 }

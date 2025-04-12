@@ -1,3 +1,4 @@
+{{-- 勤怠一覧画面(管理者用) --}}
 @extends('layouts.app')
 
 @section('subtitle','勤怠一覧画面(管理者用)')
@@ -11,6 +12,17 @@
 @endsection  
 
 @section('main-contents')
+@php
+
+  // 未来の日付へはリンクを作らない
+  $todayDate     = new DateTime( date("Y-m-d") );
+  $displayDate = new DateTime( date($navLinkDate['baseDay']) );
+
+  $lockLink = 0;
+  if($todayDate == $displayDate) {
+    $lockLink = 1;
+  }
+@endphp
 <main class="contents">
   <section class="contents__lists-area">
     <div class="attendance-title">{{ $navLinkDate['year'] }}年{{ $navLinkDate['month'] }}月{{ $navLinkDate['day'] }}日({{ $navLinkDate['dayname'] }})の勤怠</div>
@@ -28,9 +40,15 @@
           value="{{ $navLinkDate['baseDay'] }}"
         />
       </label>
-      <button class="attendance-month__next" name="day_next">
-        翌日<span>&rarr;</span>
-      </button>
+      @if ($lockLink == 1)
+        <p class="attendance-month__next" name="day_next">
+          翌日<span>&rarr;</span>
+        </p>
+      @else
+        <button class="attendance-month__next" name="day_next">
+          翌日<span>&rarr;</span>
+        </button>
+      @endif
     </form>
     <table class="attendance-list">
       <thead>
@@ -83,7 +101,6 @@
               <button type="submit">詳細</button>
               <input type="hidden" name="tid" value={{ $tidDate }}>
               <input type="hidden" name="uid" value={{ $dayData['user_id'] }}>
-
             </form>
           </td>
         </tr>
@@ -91,9 +108,10 @@
       </tbody>
     </table>
   </section>
+  <p>attendance-admin-list.blade.php</p>
 </main>
 <script>
-  async function sendData(data) {
+  function sendData(data) {
     document.forms["nav_header"].submit();
   }
   const send = document.querySelector("#day__current");

@@ -114,11 +114,6 @@ class RequestStampController extends Controller
         [$inputData, $roles, $messages] = $requestVaridateInstance->varidateModify($request);
         Validator::make($inputData, $roles, $messages)->validate();
 
-        // // 休憩データ同士の関係をチェック
-        // $requestRestVaridateInstance = new StaffRestDetailRequest;
-        // [$inputData, $roles, $messages] = $requestRestVaridateInstance->varidateRestRelation($inputData);
-        // Validator::make($inputData, $roles, $messages)->validate();
-
         if ($id <> 0) {
             $attendId = $id;
         } else {

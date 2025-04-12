@@ -237,7 +237,7 @@
         @else
           <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
         @endif
-      @elseif($dispDetailDates[0]['status'] =15)
+      @elseif($dispDetailDates[0]['status'] == 15)
       <p class="request-stat">承認済み</p>      
       @else
         @if(Auth::guard('admin')->check())
