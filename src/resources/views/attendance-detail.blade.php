@@ -13,7 +13,6 @@
     $dispDetailDates[0]['status'] = old('status');
     $dispDetailDates[0]['gardFlg'] = old('gardFlg');
                            
-    
     $attendanceRestDates = [];
     $attendanceRestDates[] = [
       'rest_id'      => old('rest_id')?old('rest_id'):"",
@@ -221,16 +220,19 @@
         <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
         <input type="hidden" value="{{ $dispDetailDates[0]['dateline'] }}" name="dateline">
         <input type="hidden" value="{{ $dispDetailDates[0]['status'] }}" name="status">
+
         @if (old("restSectMax") <> "")
           <input type="hidden" value="{{ old("restSectMax") }}" name="restSectMax">
         @else
           <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
         @endif
+
         @if (old("gardFlg") <> "")
           <input type="hidden" value="{{ old("gardFlg") }}" name="gardFlg">
         @else
           <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
         @endif
+
       @else
         <form action="/attendance/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
           @csrf
@@ -240,16 +242,19 @@
           <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
           <input type="hidden" value="{{ $dispDetailDates[0]['dateline'] }}" name="dateline">
           <input type="hidden" value="{{ $dispDetailDates[0]['status'] }}" name="status">
+
           @if (old("restSectMax") <> "")
             <input type="hidden" value="{{ old("restSectMax") }}" name="restSectMax">
           @else
             <input type="hidden" value="{{ $sectionNumber }}" name="restSectMax">
           @endif
+
           @if (old("gardFlg") <> "")
             <input type="hidden" value="{{ old("gardFlg") }}" name="gardFlg">
           @else
             <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
           @endif
+
         </form>
       @endif
     </section>
