@@ -137,7 +137,6 @@ class StaffDetailRequest extends FormRequest
         }
         if (!empty($restBaseDatas)) {
             asort($restBaseDatas);
-            // dd($restBaseDatas);
             $newIndex = 0;
             $restDatas = [];
             foreach ($restBaseDatas as $key => $value) {
@@ -167,9 +166,6 @@ class StaffDetailRequest extends FormRequest
                     if ($endKeyName <> $pairKey) {
                         $paramRule["{$endKeyName}"][] = "after_or_equal:" . $param[$pairKey];
                         $paramMsg["{$endKeyName}.after_or_equal"] = "休憩時間帯が他の休憩と被っているか、不適切な値です。";
-                    } elseif ($endKeyName == $pairKey) {
-                        // $paramRule["{$startKeyName}"][] = "after_or_equal:" . $param[$pairKey];
-                        // $paramMsg["{$startKeyName}.after_or_equal"] = "休憩時間帯が他の休憩と被っているか、不適切な値です。";
                     }
                 }
             }
