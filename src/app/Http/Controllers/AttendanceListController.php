@@ -160,6 +160,7 @@ class AttendanceListController extends Controller
         if ($nowTime < ($inputTime)) {
             $paramMonth = $nowTime;
         }
+
         return  $this->actionMain($paramMonth);
     }
 }
