@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('subtitle','スタッフ別勤怠一覧画面')
+@section('subtitle','スタッフ別勤怠一覧画面（管理者用）')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/attendance-staff-list.css') }}" />

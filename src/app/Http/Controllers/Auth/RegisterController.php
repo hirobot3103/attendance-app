@@ -29,7 +29,7 @@ class RegisterController extends Controller
 
     event(new Registered($user = $creator->create($request->all())));
 
-    登録後自動でログイン
+    // 登録後自動でログイン
     $this->guard->login($user);
 
     return app(RegisterResponse::class);
