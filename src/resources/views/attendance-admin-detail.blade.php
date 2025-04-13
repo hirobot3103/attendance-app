@@ -1,7 +1,7 @@
 {{-- 管理者用ページ：承認直前の勤怠詳細 --}}
 @extends('layouts.app')
 
-@section('subtitle','勤怠詳細画面(管理者ページ)')
+@section('subtitle','勤怠詳細画面(管理者用)')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
