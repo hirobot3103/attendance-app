@@ -156,6 +156,8 @@ class StaffListController extends Controller
                     }
                 }
             }
+
+            // 表示する勤怠データ
             $dispAttendanceDatas[] = [
                 'id' => $recordId,
                 'date' => $recordDate,
@@ -166,6 +168,7 @@ class StaffListController extends Controller
                 'def_attendance' => $recordDiffMin,
                 'def_rest'       => $recordDiffRest,
                 'total_attendance' => $recordDiffTotal,
+                'cannel' => 1,
             ];
         }
 
@@ -208,6 +211,16 @@ class StaffListController extends Controller
             $paramMonth = $mode->addMonth()->format('Y-m-01');
         } else {
             $paramMonth = $mode->format('Y-m-01');
+        }
+
+        // 日付($request->month__current)が未来なら、現時点の日付を表示
+        // inputtype:カレンダーの場合
+        $nowBaseTime = new Carbon();
+        $nowTime = $nowBaseTime->format('Y-m-01');
+        $inputTime = $mode->format('Y-m-01');
+
+        if ($nowTime < ($inputTime)) {
+            $paramMonth = $nowTime;
         }
 
         $csvOutPut = 0;
