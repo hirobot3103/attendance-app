@@ -1,7 +1,7 @@
 {{-- 管理者用申請一覧 --}}
 @extends('layouts.app')
 
-@section('subtitle','申請一覧画面(管理者用ページ)')
+@section('subtitle','申請一覧画面(管理者用)')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/admin-request-list.css') }}" />

@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\AttendanceController;
@@ -13,20 +13,9 @@ use App\Http\Controllers\RequestStampController;
 use App\Http\Controllers\StaffListController;
 
 // ルートの場合
-// ログインの状況や直前のページに応じて表示先を切り替える
-Route::get('/', function () {
-    $previousUrl = url()->previous();
-    if (preg_match("/\wadmin/", $previousUrl, $result)) {
-        if (Auth::guard('admin')->check()) {
-            return redirect($previousUrl);
-        }
-        return redirect('/admin/login');
-    }
-    if (Auth::guard('web')->check()) {
-        return redirect($previousUrl);
-    }
-    return redirect('/login');
-});
+// ログアウトせずに手入力で別のページアドレスを表示させた場合などに
+// ログインの状況に応じて表示先を切り替える
+Route::get('/', [LoginController::class, 'rootCourseChange']);
 
 // 申請関係
 //一般ユーザー、管理者側とも同じURLのため、コントローラー内で処理を分岐
@@ -38,12 +27,8 @@ Route::middleware('verified')->group(function () {
 });
 
 // 一般ユーザーのログイン
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
+Route::get('/login', [LoginController::class, 'userLogin'])->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:web');
-Route::post('/login',  [AttendanceController::class, 'index'])->middleware('auth:web');
 
 // 一般ユーザー用ページ
 Route::middleware(['auth:web'])->group(function () {
@@ -68,18 +53,8 @@ Route::middleware(['auth:web'])->group(function () {
     });
 });
 
-// 一般ユーザーのログアウト
-Route::post('/logout', [LogoutController::class, 'userLogout'])->name('logout');
-
-
 // 管理者のログイン
-Route::get('/admin/login', function () {
-    if (Auth::guard('admin')->check()) {
-        return redirect(route('admin.dashboard'));
-    }
-    return view('auth.admin-login');
-})->name('admin.login');
-
+Route::get('/admin/login', [LoginController::class, 'adminLogin'])->name('admin.login');
 Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:admin');
 
 // 管理者用ページ
