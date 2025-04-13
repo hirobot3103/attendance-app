@@ -13,17 +13,17 @@ use App\Http\Controllers\RequestStampController;
 use App\Http\Controllers\StaffListController;
 
 // ルートの場合
-// ログインの状況に応じて表示先を切り替える
+// ログインの状況や直前のページに応じて表示先を切り替える
 Route::get('/', function () {
     $previousUrl = url()->previous();
     if (preg_match("/\wadmin/", $previousUrl, $result)) {
-        // if (Auth::guard('admin')->check()) {
-        //     return redirect($previousUrl);
-        // }
+        if (Auth::guard('admin')->check()) {
+            return redirect($previousUrl);
+        }
         return redirect('/admin/login');
     }
     if (Auth::guard('web')->check()) {
-        // return redirect($previousUrl);
+        return redirect($previousUrl);
     }
     return redirect('/login');
 });
@@ -39,13 +39,11 @@ Route::middleware('verified')->group(function () {
 
 // 一般ユーザーのログイン
 Route::get('/login', function () {
-    if (Auth::guard('web')->check()) {
-        // return redirect(route('user.dashboard'));
-    }
     return view('auth.login');
 })->name('login');
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:web');
+Route::post('/login',  [AttendanceController::class, 'index'])->middleware('auth:web');
 
 // 一般ユーザー用ページ
 Route::middleware(['auth:web'])->group(function () {

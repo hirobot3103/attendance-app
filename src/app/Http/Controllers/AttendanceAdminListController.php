@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
-// use App\Models\Request_Attendance;
-// use App\Models\Rest;
-// use App\Models\Request_Rest;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -73,8 +69,6 @@ class AttendanceAdminListController extends Controller
         $currentEndOfMonth = $todayDate->daysInMonth;
         $dateStart = $currentYear . '-' . $currentMonth . '-' . $currentDay . ' 00:00:00';
         $dateEnd = $currentYear . '-' . $currentMonth . '-' . $currentDay . ' 23:59:59';
-
-        // $loginUserId = Auth::user()->id;
 
         $query = Attendance::whereBetween('clock_in', [$dateStart, $dateEnd]);
         $userAttendanceDatas = $query->orderBy('clock_in', 'asc')->orderBy('id', 'asc')->get();
@@ -160,6 +154,15 @@ class AttendanceAdminListController extends Controller
             $paramDay = $mode->addDay()->format('Y-m-d');
         } else {
             $paramDay = $mode->format('Y-m-d');
+        }
+
+        // 日付($request->day__current)が未来なら、現時点の日付を表示
+        $nowBaseTime = new Carbon();
+        $nowTime = $nowBaseTime->format('Y-m-d');
+        $inputTime = $mode->format('Y-m-d');
+
+        if ($nowTime < ($inputTime)) {
+            $paramDay = $nowTime;
         }
 
         return  $this->actionMain($paramDay);
