@@ -133,7 +133,7 @@ php artisan db:seed
 
 ## テスト環境と実施  
 1. テスト項目
-- D項目：　1,2,3,4,5,6,7,8,9,10,12,13,14,15の14個(11番以外)  
+- D項目：　1,2,3,4の４つ
 
 2.　テストへの準備  
 - テストを行う前に準備をします。
@@ -141,12 +141,12 @@ php artisan db:seed
 docker-compose exec php bash
 php artisan key:generate  --env=testing
 php artisan migrate  --env=testing
-php artisan db:seed  --class=TestDatabaseSeeder --env=testing
+php artisan db:seed  --env=testing
 ```
 3. テスト実施
 - 一括テストの場合
 ```
-php artisan test tests/Feature/*
+
 ```
 - 個別のテストの場合
 ```
@@ -163,5 +163,5 @@ Github git@github.com:hirobot3103/attendance-app.git
 開発環境　http://locaohost:80/ , http://locaohost:8080   
 
 ## ER図  
-- テーブル仕様書については、案件シート内に記載
-<img src="./doc/img/ez.jpg">
+- テーブル仕様書については、案件シート内に記載<br>
+- <img src="./doc/img/ez.jpg">
