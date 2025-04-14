@@ -12,7 +12,7 @@
         <li>
           <form action="{{ route('admin.logout') }}" method="post">
               @csrf
-              <button type="submit" class="page-menu-btn">ログアウト</button>
+              <button class="page-menu-btn" type="submit">ログアウト</button>
           </form>
         </li>
       @else

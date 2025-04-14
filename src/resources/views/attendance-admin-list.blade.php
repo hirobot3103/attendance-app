@@ -108,7 +108,6 @@
       </tbody>
     </table>
   </section>
-  <p>attendance-admin-list.blade.php</p>
 </main>
 <script>
   function sendData(data) {
