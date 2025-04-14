@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\VerificationController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\AttendanceAdminListController;
 use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\RequestStampController;
 use App\Http\Controllers\StaffListController;
+use App\Http\Controllers\AuthCustomAuthenticatedSessionController;
 
 // ルートの場合
 // ログアウトせずに手入力で別のページアドレスを表示させた場合などに
@@ -28,7 +28,7 @@ Route::middleware('verified')->group(function () {
 
 // 一般ユーザーのログイン
 Route::get('/login', [LoginController::class, 'userLogin'])->name('login');
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:web');
+Route::post('/login', [AuthCustomAuthenticatedSessionController::class, 'store'])->middleware('guest:web');
 
 // 一般ユーザー用ページ
 Route::middleware(['auth:web'])->group(function () {
@@ -55,7 +55,7 @@ Route::middleware(['auth:web'])->group(function () {
 
 // 管理者のログイン
 Route::get('/admin/login', [LoginController::class, 'adminLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest:admin');
+Route::post('/admin/login', [AuthCustomAuthenticatedSessionController::class, 'store'])->middleware('guest:admin');
 
 // 管理者用ページ
 Route::middleware(['admin.guard'])->group(function () {

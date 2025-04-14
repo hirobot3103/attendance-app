@@ -31,6 +31,7 @@
 ./binlog.000031
 ./binlog.000032
 <<<<<<< HEAD
+<<<<<<< HEAD
 ./binlog.000033
 ./binlog.000034
 ./binlog.000035
@@ -38,5 +39,10 @@
 ./binlog.000037
 ./binlog.000038
 =======
+>>>>>>> ec4f57f (push 1st)
+=======
 >>>>>>> a25b428 (repull)
 ./binlog.000039
+./binlog.000040
+./binlog.000041
+./binlog.000042
