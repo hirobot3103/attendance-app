@@ -18,14 +18,14 @@
           @csrf
           <section class="item-detail-area">
             <p class="iteme-name-title">メールアドレス</p>
-            <input type="text" class="item-name" name="email"  value="{{ old( 'email' ) }}"/>
+            <input class="item-name" type="text" name="email"  value="{{ old( 'email' ) }}"/>
             @if ($errors->has('email'))
               @foreach($errors->get('email') as $errorMassage )
                   <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
               @endforeach
             @endif
             <p class="iteme-name-title">パスワード</p>
-            <input type="password" class="item-prace" name="password" />
+            <input class="item-prace" type="password" name="password" />
             @if ($errors->has('password'))
               @foreach($errors->get('password') as $errorMassage )
                   <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 

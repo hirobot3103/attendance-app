@@ -62,6 +62,20 @@ class StaffListController extends Controller
     {
         $dateBaseData = $linkData['year'] . '/';
         $csvFileName = 'attendance_userid' . $csvData[0]['target_id'] . '_' . $linkData['year'] . $linkData['month'] . '.csv';
+
+        $csvTitle  = [
+            "ID",
+            '日付',
+            '一般ユーザーID',
+            '一般ユーザー名',
+            '勤務開始時刻',
+            '勤務終了時刻',
+            '勤務時間（休憩考慮なし）',
+            '通算休憩時間',
+            '勤務時間（休憩考慮）',
+            'csv出力を表す値'
+        ];
+
         $csvHeader = [
             "id",                // 勤怠DBに割り振られたid(勤務なし = 0)
             "date",              // 日付
@@ -72,13 +86,16 @@ class StaffListController extends Controller
             "def_attendance",    // 勤務時間（休憩考慮なし）
             "def_rest",          // 休憩時間通算
             "total_attendance",  // 勤務時間（休憩考慮あり）
+            "cannel",            // csv出力を表す値(csv出力:1) 
         ];
 
-        $response = new StreamedResponse(function () use ($csvHeader, $dateBaseData, $csvData) {
+        $response = new StreamedResponse(function () use ($csvTitle, $csvHeader, $dateBaseData, $csvData) {
+
             $createCsvFile = fopen('php://output', 'w');
 
             mb_convert_variables('SJIS-win', 'UTF-8', $csvHeader);
 
+            fputcsv($createCsvFile, $csvTitle);
             fputcsv($createCsvFile, $csvHeader);
 
             foreach ($csvData as $csv) {
