@@ -63,6 +63,7 @@ class FortifyServiceProvider extends ServiceProvider
             } else {
                 $RequestInstance = new LoginRequest();
             }
+
             $credentials = Validator::make(
                 $input,
                 $RequestInstance->rules(),
