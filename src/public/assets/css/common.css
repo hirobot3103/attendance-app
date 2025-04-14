@@ -1,13 +1,16 @@
 @charset 'UTF-8';
 
+button, input[type=submit], a {
+  cursor: pointer;
+}
+
+/* Error表示 */
 .validatin-error__area {
   display: block;
   text-decoration: none;
   width:100%;
   height:1vw;
-  text-align: left;
-  /* margin-top: 0.5vw;
-  padding-left:1vw; */
+  text-align: center;
   line-height: 1vw;
   font-size:1vw;
   font-weight: bold;

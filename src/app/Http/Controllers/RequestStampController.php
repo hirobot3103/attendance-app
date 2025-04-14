@@ -11,7 +11,6 @@ use App\Models\Request_Attendance;
 use App\Models\Request_Rest;
 use App\Models\User;
 use App\Http\Requests\StaffDetailRequest;
-use App\Http\Requests\StaffRestDetailRequest;
 
 class RequestStampController extends Controller
 {

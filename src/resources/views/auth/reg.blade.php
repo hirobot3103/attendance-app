@@ -18,28 +18,28 @@
       @csrf
       <section class="item-detail-area">
         <p class="iteme-name-title">名前</p>
-        <input type="text" class="item-name" name="name" value="{{ old('name')}}"/>
+        <input class="item-name" type="text" name="name" value="{{ old('name')}}"/>
         @if ($errors->has('name'))
           @foreach($errors->get('name') as $errorMassage )
               <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
           @endforeach
         @endif
         <p class="iteme-name-title">メールアドレス</p>
-        <input type="text" class="item-name" name="email" value="{{ old('email') }}"/>
+        <input class="item-name" type="text" name="email" value="{{ old('email') }}"/>
         @if ($errors->has('email'))
           @foreach($errors->get('email') as $errorMassage )
               <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
           @endforeach
         @endif
         <p class="iteme-name-title">パスワード</p>
-        <input type="password" class="item-name" name="password" />
+        <input class="item-name" type="password" name="password" />
         @if ($errors->has('password'))
           @foreach($errors->get('password') as $errorMassage )
               <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
           @endforeach
         @endif
         <p class="iteme-name-title">確認用パスワード</p>
-        <input type="password" class="item-prace" name="password_confirmation" />
+        <input class="item-prace" type="password" name="password_confirmation" />
         @if ($errors->has('password_confirmation'))
           @foreach($errors->get('password_confirmation') as $errorMassage )
               <div class="validatin-error__area">&#x274C;&emsp;{{$errorMassage}}</div> 
