@@ -193,11 +193,16 @@ body {
     padding-left: 70%;
 }
 
-/* 承認済み表示 */
+/* 承認済み・待ち表示 */
+#space_dev, #space_divapproved {
+    width:100%;
+    text-align:right;
+}
 .request-stat {
     display:block;
     height: 3.306vw;
     width: 12.16vw;
+    margin:0 0 0 auto;
     background-color: #696969;
     color: #fff;
     line-height:3.306vw;

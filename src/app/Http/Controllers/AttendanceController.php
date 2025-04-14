@@ -28,7 +28,8 @@ class AttendanceController extends Controller
                 'status' => $userAttendanceData->status,
             ];
         }
-        return view('top', compact('params'));
+        $firstTime = $todayDate->format('Y-m-d h:i');
+        return view('top', compact('params', 'firstTime'));
     }
 
     public function action(Request $request)
@@ -38,7 +39,6 @@ class AttendanceController extends Controller
 
         // 出勤ボタン押下時
         if ($request->has('clock_in')) {
-
             $params = [
                 'user_id'  => $loginUserId,
                 'clock_in' => $todayDate::now()->format('y-m-d H:i:00'),

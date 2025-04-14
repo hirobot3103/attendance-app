@@ -21,7 +21,7 @@
         break;
 
       case 1:
-        $attendanceStatus = "勤務中";
+        $attendanceStatus = "出勤中";
         $attendanceMassege = "";
         break;
 
@@ -55,6 +55,7 @@
 
   <main class="contents">
     <section class="contents__lists-area">
+      <input type="hidden" value="{{ $firstTime }}">
       <div class="attendance-status">{{ $attendanceStatus }}</div>
       <div class="attendance-date" id="attendance-date">2023年6月1日(木)</div>
       <div class="attendance-time" id="attendance-time">08:00</div>
