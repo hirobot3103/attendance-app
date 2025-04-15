@@ -34,7 +34,6 @@ class AuthCustomAuthenticatedSessionController extends Controller
         )->validate();
 
         if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            dd("ss");
             throw ValidationException::withMessages([
                 Fortify::username() => [__('auth.failed')],
             ]);
