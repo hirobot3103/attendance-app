@@ -18,13 +18,11 @@ use App\Http\Controllers\AuthCustomAuthenticatedSessionController;
 Route::get('/', [LoginController::class, 'rootCourseChange']);
 
 // 申請関係
-//一般ユーザー、管理者側とも同じURLのため、コントローラー内で処理を分岐
-Route::middleware('verified')->group(function () {
-    Route::get('/stamp_correction_request/list', [RequestStampController::class, 'index'])->name('attendant-req');
-    Route::get('/stamp_correction_request/list/{pageId}', [RequestStampController::class, 'reqindex'])->name('attendant-reqindex');
-    Route::get('/stamp_correction_request/{id}', [RequestStampController::class, 'detail'])->name('attendant-detail');
-    Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [RequestStampController::class, 'approve'])->name('attendant-approve');
-});
+//一般ユーザー、管理者側とも同じURLのため、コントローラー内で処理を分
+Route::get('/stamp_correction_request/list', [RequestStampController::class, 'index'])->name('attendant-req');
+Route::get('/stamp_correction_request/list/{pageId}', [RequestStampController::class, 'reqindex'])->name('attendant-reqindex');
+Route::get('/stamp_correction_request/{id}', [RequestStampController::class, 'detail'])->name('attendant-detail');
+Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [RequestStampController::class, 'approve'])->name('attendant-approve');
 
 // 一般ユーザーのログイン
 Route::get('/login', [LoginController::class, 'userLogin'])->name('login');
