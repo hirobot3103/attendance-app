@@ -7,12 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\AdminLoginRequest;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Fortify\Contracts\LoginResponse;
-use Illuminate\Validation\ValidationException;
-use Laravel\Fortify\Fortify;
 use Illuminate\Http\Request;
+use App\Models\Admin;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
-// Fortifyのコントローラーをカスタム
 class AuthCustomAuthenticatedSessionController extends Controller
 {
     public function store(Request $request)
@@ -33,14 +32,20 @@ class AuthCustomAuthenticatedSessionController extends Controller
             $RequestInstance->messages(),
         )->validate();
 
-        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            throw ValidationException::withMessages([
-                Fortify::username() => [__('auth.failed')],
-            ]);
+        if ($request->is('admin/*')) {
+            $admin = Admin::where('email', $credentials['email'])->first();
+            if ($admin && Hash::check($credentials['password'], $admin->password)) {
+                Auth::guard('admin')->login($admin);
+                return redirect(route('admin.dashboard'));
+            }
+        } else {
+            $user = User::where('email', $credentials['email'])->first();
+            if ($user && Hash::check($credentials['password'], $user->password)) {
+                Auth::guard('web')->login($user);
+                return redirect(route('user.dashboard'));
+            }
         }
 
-        $request->session()->regenerate();
-
-        return app(LoginResponse::class);
+        return null;
     }
 }
