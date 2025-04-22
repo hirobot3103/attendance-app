@@ -115,9 +115,4 @@ class TestId05GetStatus extends TestCase
         $respose = $this->get('/attendance');
         $respose->assertSee('退勤済', false);
     }
-
-    // dd($respose);
-    // $r = Attendance::all();
-    // dd($r->toArray());
-
 }
