@@ -3,13 +3,12 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Attendance;
-
 use Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
+use Carbon\Carbon;
 
 class TestId06ClockIn extends TestCase
 {
@@ -106,22 +105,13 @@ class TestId06ClockIn extends TestCase
         $this->actingAs($admin, 'admin');
 
         //　ユーザー別勤怠データページを取得
-        $respose = $this->post(route('admin.staffdetail', ['id' => $clockInDate->id]));
-        dd($respose);
+        $tid = new Carbon($clockInDate->clock_in);
 
-
-        // $this->actingAs($this->user);
-
-
-        // $respose = $this->get('/attendance');
-        // $respose = $this->post(
-        //     '/attendance',
-        //     [
-        //         'clock_out' => null,
-        //     ]
-        // );
-
-        // $respose = $this->get('/attendance');
-        // $respose->assertDontSee('<button type="submit" class="attendance-btn" name="clock_in">出&nbsp;勤</button>', false);
+        $respose = $this->post(route('admin.staffdetail', ['id' => $clockInDate->id]), [
+            'tid' => $tid->format('Y-m-d'),
+            'uid' => $clockInDate->user_id,
+        ]);
+        $clockTime = $tid->format('H:i');
+        $respose->assertSee('value="' . $clockTime . '"', false);
     }
 }
