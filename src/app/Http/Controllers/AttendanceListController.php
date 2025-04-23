@@ -151,6 +151,16 @@ class AttendanceListController extends Controller
             $paramMonth = $mode->format('Y-m-01');
         }
 
+        // 日付($request->month__current)が未来なら、現時点の日付を表示
+        // inputtype:カレンダーの場合
+        $nowBaseTime = new Carbon();
+        $nowTime = $nowBaseTime->format('Y-m-01');
+        $inputTime = $mode->format('Y-m-01');
+
+        if ($nowTime < ($inputTime)) {
+            $paramMonth = $nowTime;
+        }
+
         return  $this->actionMain($paramMonth);
     }
 }

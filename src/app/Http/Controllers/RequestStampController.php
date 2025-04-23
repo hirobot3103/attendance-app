@@ -11,7 +11,6 @@ use App\Models\Request_Attendance;
 use App\Models\Request_Rest;
 use App\Models\User;
 use App\Http\Requests\StaffDetailRequest;
-use App\Http\Requests\StaffRestDetailRequest;
 
 class RequestStampController extends Controller
 {
@@ -113,11 +112,6 @@ class RequestStampController extends Controller
         $requestVaridateInstance = new StaffDetailRequest;
         [$inputData, $roles, $messages] = $requestVaridateInstance->varidateModify($request);
         Validator::make($inputData, $roles, $messages)->validate();
-
-        // // 休憩データ同士の関係をチェック
-        // $requestRestVaridateInstance = new StaffRestDetailRequest;
-        // [$inputData, $roles, $messages] = $requestRestVaridateInstance->varidateRestRelation($inputData);
-        // Validator::make($inputData, $roles, $messages)->validate();
 
         if ($id <> 0) {
             $attendId = $id;

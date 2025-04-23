@@ -221,7 +221,7 @@
         </div>
       </div>
       @if ( $dispDetailDates[0]['status'] >=11 && $dispDetailDates[0]['status'] <=13 )
-        <p class="request-stat">承認待ち</p>
+        <div id="space_div"><p class="request-stat">承認待ち</p></div>
         <input type="hidden" value="{{ $dispDetailDates[0]['id'] }}" name="id">
         <input type="hidden" value="{{ $dispDetailDates[0]['target_id'] }}" name="user_id">
         <input type="hidden" value="{{ $dispDetailDates[0]['name'] }}" name="name">
@@ -237,8 +237,8 @@
         @else
           <input type="hidden" value="{{ $dispDetailDates[0]['gardFlg'] }}" name="gardFlg">
         @endif
-      @elseif($dispDetailDates[0]['status'] =15)
-      <p class="request-stat">承認済み</p>      
+      @elseif($dispDetailDates[0]['status'] == 15)
+        <div id="space_divapproved"><p class="request-stat">承認済み</p></div>      
       @else
         @if(Auth::guard('admin')->check())
           <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
@@ -265,6 +265,5 @@
         </form>
       @endif
     </section>
-    <p>attendance-staff-detail.blade.php</p>
   </main>
 @endsection

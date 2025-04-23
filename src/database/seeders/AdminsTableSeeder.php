@@ -13,6 +13,7 @@ class AdminsTableSeeder extends Seeder
     {
 
         // adminsテーブル 管理者ユーザー
+        // 一件のみ
         $params = [
             [
                 'name'              => '手島 香',

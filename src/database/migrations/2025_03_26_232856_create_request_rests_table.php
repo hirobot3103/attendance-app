@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('request_rests', function (Blueprint $table) {
             $table->id();
-            $table->integer('attendance_id')->default(0)->nullable();
-            $table->integer('req_attendance_id')->default(0)->nullable();
-            $table->integer('rest_id')->default(0)->nullable();
+            $table->foreignId('attendance_id')->constrained('attendances'); // 対象勤怠データID
+            $table->foreignId('req_attendance_id')->constrained('request_attendances'); // 対象勤怠データID
+            $table->foreignId('rest_id')->constrained('rests');  // 対象の休憩データID
             $table->dateTime('rest_in')->nullable();  // 休憩開始日時
             $table->dateTime('rest_out')->nullable(); // 休憩終了日時
             $table->timestamp('created_at')->useCurrent()->nullable();
@@ -23,9 +23,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('request_rests');
