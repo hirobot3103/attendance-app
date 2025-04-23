@@ -1,7 +1,7 @@
 {{-- 管理者用ページ：承認直前の勤怠詳細 --}}
 @extends('layouts.app')
 
-@section('subtitle','勤怠詳細画面(管理者ページ)')
+@section('subtitle','勤怠詳細画面(管理者用)')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('assets/css/attendance-admin-detail.css') }}" />
@@ -151,7 +151,7 @@
       </div>
       <section class="approve_btn">
         @if ( $dispDetailDates[0]['status'] == 15 )
-          <p class="request-stat">承認済み</p>
+          <div id="space_div"><p class="request-stat">承認済み</p></div>
         @else
           <form action="/stamp_correction_request/approve/{{ $dispDetailDates[0]['id'] }}" class="detail-form" id="detail-form" method="POST">
             @csrf
@@ -164,8 +164,5 @@
         @endif
       </section>
     </section>
-    <p>$attendanceRestDates</p>
-    <p>{{$attendanceRestDates}}</p>
-    <p>attendance-admin-detail.php</p>
   </main>
 @endsection

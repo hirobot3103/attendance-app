@@ -23,6 +23,7 @@
             <div class="status__area">&#x2B55;&emsp;{{ session('status_resend') }}</div>
         @endif
         <a href="{{ $verificationUrl }}" class="container__verify">認証はこちらから</a>
+
         <form method="POST" action="{{ route('verification.resend') }}">
             @csrf
             <button class="container__mail-resend" type="submit">認証メールを再送信する</button>

@@ -12,6 +12,22 @@
 @endsection  
 
 @section('main-contents')
+  @php
+
+    // 未来の日付へはリンクを作らない
+    $todayDate      = new DateTime( date("Y-m") );
+    $todayDateDay   = new DateTime( date("Y-m-d") );
+
+    $displayDate = new DateTime( date($navLinkDate['baseMonth']) );
+
+    $lockLink = 0;       // ヘッダーナビ部分
+    $lockDairyLink = 0;  // 日付毎のデータ欄
+    if($todayDate == $displayDate) {
+      $lockLink = 1;
+    } else {
+      $lockLink = 0;
+    }
+  @endphp
     <main class="contents">
       <section class="contents__lists-area">
         <div class="attendance-title">勤怠一覧</div>
@@ -29,10 +45,16 @@
               value="{{ $navLinkDate['baseMonth'] }}"
             />
           </label>
-          <button class="attendance-month__next" name="month_next">
-            翌月<span>&rarr;</span>
-          </button>
-        </form>
+          @if ($lockLink == 1)
+            <p class="attendance-month__next" name="">
+              翌月<span>&rarr;</span>
+            </p>
+          @else
+            <button class="attendance-month__next" name="month_next">
+              翌月<span>&rarr;</span>
+            </button>
+          @endif
+          </form>
         <table class="attendance-list">
           <thead>
             <tr>
@@ -79,8 +101,22 @@
                   <td>{{ $dayData['clock_out'] }}</td>
                   <td>{{ $defRest }}</td>
                   <td>{{ $defTotal }}</td>
-                  <td class="attendance-list__detail"><a href="/attendance/{{ $dayData['id'] }}?tid={{ $tidDate }}">詳細</a></td>
+                  <td class="attendance-list__detail">
+                    @if($lockDairyLink == 1)
+                      <p>詳細</p>
+                    @else
+                      <a href="/attendance/{{ $dayData['id'] }}?tid={{ $tidDate }}">詳細</a>      
+                    @endif
+                  </td>
                 </tr>
+                @php
+                  // 今日の日付と表示用の日付が一致したら、それ以降「詳細」リンクをつけない
+                  $tidDateDay = new DateTime( date($tidDate) );
+                  if($todayDateDay == $tidDateDay) {
+                    $lockDairyLink = 1;
+                  }
+                @endphp
+      
               @endforeach
             @endif
           </tbody>
