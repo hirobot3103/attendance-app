@@ -257,7 +257,8 @@ class StaffListController extends Controller
         } else {
 
             // エラーがあった後、ブラウザで再表示した際、GETで呼び出される
-            $attendanceUserName  = User::where('id', Auth::user()->id)->first();
+            $attendanceBase = Attendance::where('id', $id)->first();
+            $attendanceUserName  = User::where('id', $attendanceBase->user_id)->first();
             if ($request->session()->get('errors')) {
                 $dispDetailDates[] = [];
                 $attendanceRestDates = [];
