@@ -9,7 +9,6 @@ use App\Models\Rest;
 
 use Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 
 use Carbon\Carbon;
 
