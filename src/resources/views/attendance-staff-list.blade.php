@@ -128,7 +128,6 @@
         <button type="submit" class="form-btn" name="csv_btn" form="nav_header">CSV出力</button>
     </section>
   </main>
-  <p>attendance-staff-list.blade.php</p>
   <script>
     async function sendData(data) {
       document.forms["nav_header"].submit();
