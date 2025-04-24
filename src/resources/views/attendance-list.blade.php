@@ -123,7 +123,6 @@
         </table>
       </section>
     </main>
-    <p>attendance-list.blade.php</p>
     <script>
       async function sendData(data) {
         document.forms["nav_header"].submit();
