@@ -258,6 +258,5 @@
         </form>
       @endif
     </section>
-    <p>attendance-detail.blade.php</p>
   </main>
 @endsection
