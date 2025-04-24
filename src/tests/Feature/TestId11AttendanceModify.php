@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use App\Models\Admin;
@@ -11,7 +10,6 @@ use App\Models\User;
 use App\Models\Attendance;
 use App\Models\Request_Attendance;
 use App\Models\Rest;
-use App\Models\Request_Rest;
 
 use Tests\TestCase;
 
