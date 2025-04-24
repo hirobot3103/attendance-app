@@ -3,12 +3,11 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Artisan;
+
 use App\Models\User;
-use App\Models\Attendance;
 
 use Tests\TestCase;
-use Illuminate\Support\Facades\Artisan;
 
 class TestId05GetStatus extends TestCase
 {
