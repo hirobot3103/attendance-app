@@ -296,7 +296,7 @@ class RequestStampController extends Controller
                     // 現状の休暇データが申請で更新される対象かどうか
                     if (!empty($requestRestData)) {
 
-                        // 更新対象（現状で休暇データがあり、申請側にもある）
+                        // 更新対象（現状で休憩データがあり、申請側にもある）
                         $paramsRest = [
                             'rest_in'  => $requestRestData['rest_in'],
                             'rest_out' => $requestRestData['rest_out'],
@@ -305,7 +305,7 @@ class RequestStampController extends Controller
                         $currentQueryInstance::where('id', $currentRestId)->update($paramsRest);
                     } else {
 
-                        // 削除対象（現状では休暇データがあるが申請側にはない）
+                        // 削除対象（現状では休憩データがあるが申請側にはない）
                         $currentQueryInstance = new Rest();
                         $currentQueryInstance::where('id', $currentRestId)->delete();
                     }
