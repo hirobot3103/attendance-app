@@ -116,6 +116,8 @@ class AttendanceDetailController extends Controller
                 'rest_out'              => $request->rest_clockout,
             ];
         }
+
+        // 休憩時間が２つ以上の場合
         if ($maxCount > 0) {
             for ($counter = 1; $counter <= $maxCount; $counter++) {
                 $tmpNewRestData = [];

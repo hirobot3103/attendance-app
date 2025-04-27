@@ -10,12 +10,14 @@ class VerificationController extends Controller
 {
     public function notice(Request $request)
     {
-        $user = $request->user();
-        $verificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
-        );
+        $verificationUrl = "http://localhost:8025";
+        // release 1.1 mailhogに変更、押下で認証させることを削除
+        // $user = $request->user();
+        // $verificationUrl = URL::temporarySignedRoute(
+        //     'verification.verify',
+        //     now()->addMinutes(60),
+        //     ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
+        // );
 
         return view('auth.verify-email', ['verificationUrl' => $verificationUrl]);
     }
